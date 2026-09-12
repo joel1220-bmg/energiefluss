@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "id": "costs.de",
+    "asOf": "2026-09-12",
+    "locale": "de-DE",
+    "currency": "EUR",
+    "kind": "orientation_seed",
+    "priceBasis": "brutto inkl. Einbau, DE Marktspannen 2026 — KEINE Angebotsgarantie",
+    "disclaimer": "Nur Orientierung. Regionale Spreizung hoch. Vor Anzeige: Unsicherheitsband zeigen. Kein Ersatz für Handwerkerangebot / EEE.",
+    "sources": [
+      {
+        "id": "seed-energiefluss",
+        "label": "Energiefluss Seed-Spannen (intern, 2026-09-12)",
+        "url": null
+      }
+    ],
+    "confidence": "low_to_medium",
+    "notes": [
+      "Spannen noch nicht gegen Primärquellen (Verbände/Marktstudien 2026) belegt — vor Produkt-Go-Live nachziehen.",
+      "value = Mittel aus low/high, außer anders vermerkt."
+    ]
+  },
+  "items": {
+    "heatPumpAirWater": {
+      "value": 33500,
+      "low": 27000,
+      "high": 40000,
+      "unit": "EUR",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Luft-Wasser-WP komplett inkl. Einbau; Ausreißer nach oben bei schwieriger Hydraulik/Pufferspeicher."
+    },
+    "heatPumpBrine": {
+      "value": 50000,
+      "low": 40000,
+      "high": 60000,
+      "unit": "EUR",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Sole-WP inkl. Erdsonden/Kollektor; Bohrtiefe/Geologie treibt high."
+    },
+    "roofInsulation": {
+      "value": 170,
+      "low": 60,
+      "high": 280,
+      "unit": "EUR_per_m2",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Dachdämmung je Verfahren (Zwischensparren bis Aufsparren/Sanierung); sehr breites Band."
+    },
+    "topFloorCeiling": {
+      "value": 52,
+      "low": 35,
+      "high": 70,
+      "unit": "EUR_per_m2",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Oberste Geschossdecke."
+    },
+    "wdvs": {
+      "value": 200,
+      "low": 150,
+      "high": 250,
+      "unit": "EUR_per_m2",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "WDVS Außenwand; Gerüst/Details in high."
+    },
+    "basementCeiling": {
+      "value": 48,
+      "low": 35,
+      "high": 60,
+      "unit": "EUR_per_m2",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Kellerdeckendämmung."
+    },
+    "windowTriple": {
+      "value": 900,
+      "low": 600,
+      "high": 1200,
+      "unit": "EUR_per_unit",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "3-fach-Verglasung Fenster inkl. Einbau; Größe/Denkmalschutz treiben high."
+    },
+    "pvWithStorage_8to10kWp": {
+      "value": 18000,
+      "low": 14000,
+      "high": 22000,
+      "unit": "EUR",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "PV 8–10 kWp + Speicher als Paket; Modul-/Speicherpreise volatil."
+    },
+    "ventilationCentral": {
+      "value": 11500,
+      "low": 8000,
+      "high": 15000,
+      "unit": "EUR",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Zentrale Lüftung mit WRG."
+    },
+    "hydraulicBalancing": {
+      "value": 1000,
+      "low": 500,
+      "high": 1500,
+      "unit": "EUR",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Hydraulischer Abgleich; Umfang abhängig von Heizkreisanzahl."
+    }
+  }
+}

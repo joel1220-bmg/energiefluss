@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-paper: #f3efe6;
+  --color-ink: #1a2330;
+  --color-forest: #16382c;
+  --color-forest-deep: #0e241c;
+  --color-moss: #3c6b54;
+  --color-gold: #a6853f;
+  --color-card: #fffbf3;
+  --color-line: #d5ccbc;
+  --color-muted: #5a635c;
+  --color-jetzt: #16382c;
+  --color-bald: #2d4a63;
+  --color-spaeter: #6a5e4c;
+  --color-warn: #7a3e1d;
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+.serif {
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-forest);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -3rem;
+  z-index: 50;
+  background: var(--color-forest);
+  color: white;
+  padding: 0.5rem 0.75rem;
+}
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  a[href]::after {
+    content: none !important;
+  }
+}
+
+input[type="range"] {
+  accent-color: var(--color-forest);
+}

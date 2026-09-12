@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "id": "energy-prices.de",
+    "asOf": "2026-09-12",
+    "locale": "de-DE",
+    "currency": "EUR",
+    "kind": "orientation_seed",
+    "disclaimer": "Grobe Haushaltspreise inkl. Abgaben, DE 2026. Keine Tarifauskunft. Nutzer kann im Feinschliff überschreiben.",
+    "confidence": "low_to_medium",
+    "notes": [
+      "Bänder grob aus Marktbeobachtung 2026 — vor Go-Live gegen aktuelle Vergleichsportale/BDEW prüfen.",
+      "Wärmepumpen-Tarif optional; Fallback ist Haushaltsstrom."
+    ]
+  },
+  "items": {
+    "gas": {
+      "value": 0.12,
+      "low": 0.10,
+      "high": 0.14,
+      "unit": "EUR_per_kWh",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Erdgas Arbeitspreis Haushalt, grob."
+    },
+    "oil": {
+      "value": 0.115,
+      "low": 0.10,
+      "high": 0.13,
+      "unit": "EUR_per_kWh",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Heizöl in kWh umgerechnet (ca. 10 kWh/l)."
+    },
+    "electricity": {
+      "value": 0.32,
+      "low": 0.28,
+      "high": 0.38,
+      "unit": "EUR_per_kWh",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Haushaltsstrom."
+    },
+    "heatpump": {
+      "value": 0.25,
+      "low": 0.22,
+      "high": 0.30,
+      "unit": "EUR_per_kWh",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "WP- oder Wärmestromtarif, falls vorhanden; sonst Haushaltsstrom nutzen."
+    },
+    "district": {
+      "value": 0.14,
+      "low": 0.11,
+      "high": 0.18,
+      "unit": "EUR_per_kWh",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Fernwärme stark netzabhängig."
+    },
+    "pellets": {
+      "value": 0.085,
+      "low": 0.07,
+      "high": 0.11,
+      "unit": "EUR_per_kWh",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Holzpellets, grob."
+    }
+  },
+  "feedInTariffPv": {
+    "value": 0.08,
+    "low": 0.06,
+    "high": 0.10,
+    "unit": "EUR_per_kWh",
+    "source": "seed-energiefluss",
+    "asOf": "2026-09-12",
+    "notes": "Grobe Einspeisevergütung Kleinanlage — gesetzlicher Satz am Inbetriebnahmetag maßgeblich."
+  },
+  "co2kgPerKwh": {
+    "gas": 0.201,
+    "oil": 0.266,
+    "electricity": 0.35,
+    "heatpump": 0.35,
+    "district": 0.18,
+    "pellets": 0.027,
+    "nightstorage": 0.35
+  }
+}

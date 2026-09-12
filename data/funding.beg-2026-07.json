@@ -1,0 +1,347 @@
+{
+  "meta": {
+    "id": "funding.beg-2026-07",
+    "asOf": "2026-09-12",
+    "validFrom": "2026-07-21",
+    "locale": "de-DE",
+    "currency": "EUR",
+    "kind": "orientation_seed",
+    "disclaimer": "Orientierung für Produkt/Tabellen. Kein Antrag, kein Ersatz für TPB/EEE. Maßgeblich sind Merkblatt und Kundenportal am Antragstag.",
+    "sources": [
+      {
+        "id": "kfw-458",
+        "label": "KfW 458 Produktseite",
+        "url": "https://www.kfw.de/inlandsfoerderung/Privatpersonen/Bestehende-Immobilie/F%C3%B6rderprodukte/Heizungsf%C3%B6rderung-f%C3%BCr-Privatpersonen-Wohngeb%C3%A4ude-(458)/"
+      },
+      {
+        "id": "kfw-beg-2026",
+        "label": "KfW Anpassungen BEG 2026",
+        "url": "https://www.kfw.de/inlandsfoerderung/Bundesf%C3%B6rderung-f%C3%BCr-effiziente-Geb%C3%A4ude/Anpassungen-2026/"
+      },
+      {
+        "id": "kfw-458-merkblatt",
+        "label": "KfW Merkblatt 458 (PDF)",
+        "url": "https://www.kfw.de/PDF/Download-Center/F%C3%B6rderprogramme-%28Inlandsf%C3%B6rderung%29/PDF-Dokumente/6000005131_M_458.pdf"
+      },
+      {
+        "id": "bafa-huelle",
+        "label": "BAFA BEG EM Gebäudehülle",
+        "url": "https://www.bafa.de/DE/Energie/Effiziente_Gebaeude/Sanierung_Wohngebaeude/Gebaeudehuelle/gebaeudehuelle.html"
+      },
+      {
+        "id": "bmwe-isfp-faq",
+        "label": "BMWE FAQ A.3.2 iSFP-Bonus ab 21.07.2026",
+        "url": "https://www.energiewechsel.de/KAENEF/Redaktion/DE/FAQ/FAQ-Uebersicht/BEG/faq-beg-00-03-02.html"
+      },
+      {
+        "id": "bafa-ebw",
+        "label": "BAFA Energieberatung Wohngebäude (EBW)",
+        "url": "https://www.bafa.de/DE/Energie/Energieberatung/Energieberatung_Wohngebaeude/energieberatung_wohngebaeude_node.html"
+      }
+    ],
+    "notes": [
+      "GModG/65%-Pflicht: nicht in Förderlogik mischen — nur UI-Hinweis (Bestand: keine 65%-Pflicht mehr).",
+      "Wertschöpfungsbonus für EU-WP: laut KfW geplant Q1/2027 — noch nicht aktiv in Engine rechnen.",
+      "Klimabonus-Eligibilität (Altanlage): Seed aus Produktlogik; vor Go-Live Merkblatt 458 wortgenau gegenprüfen."
+    ]
+  },
+  "kfw458": {
+    "program": "Heizungsförderung Privatpersonen Wohngebäude",
+    "productCode": "458",
+    "administrator": "KfW",
+    "rates": {
+      "base": {
+        "value": 0.3,
+        "low": 0.3,
+        "high": 0.3,
+        "unit": "fraction",
+        "source": "kfw-beg-2026",
+        "asOf": "2026-09-12",
+        "notes": "Grundförderung 30 % der förderfähigen Gesamtkosten."
+      },
+      "climateSpeedBonus": {
+        "value": 0.16,
+        "low": 0.16,
+        "high": 0.16,
+        "unit": "fraction",
+        "source": "kfw-beg-2026",
+        "asOf": "2026-09-12",
+        "notes": "Klimageschwindigkeitsbonus. Nur selbstnutzende Eigentümer (Zusatzantrag). Stepped schedule siehe schedule.",
+        "eligibilitySeed": {
+          "selfOccupiedOwner": true,
+          "oldSystemHint": "typisch: funktionierende Öl/Kohle/Gas-Etage/Nachtspeicher oder Gas/Biomasse ≥20 Jahre — MERKBLATT gegenprüfen",
+          "confidence": "medium"
+        },
+        "schedule": [
+          {
+            "validFrom": "2026-07-21",
+            "validTo": "2027-01-31",
+            "rate": 0.16
+          },
+          {
+            "validFrom": "2027-02-01",
+            "validTo": "2027-07-31",
+            "rate": 0.12
+          },
+          {
+            "validFrom": "2027-08-01",
+            "validTo": "2028-01-31",
+            "rate": 0.08
+          },
+          {
+            "validFrom": "2028-02-01",
+            "validTo": "2028-07-31",
+            "rate": 0.04
+          },
+          {
+            "validFrom": "2028-08-01",
+            "validTo": null,
+            "rate": 0.0
+          }
+        ],
+        "stepRule": "erstmals 01.02.2027, danach halbjährlich 01.02. und 01.08. −4 Prozentpunkte"
+      },
+      "incomeBonus": {
+        "selfOccupiedOnly": true,
+        "source": "kfw-beg-2026",
+        "asOf": "2026-09-12",
+        "incomeBasis": "zu versteuerndes Haushaltsjahreseinkommen",
+        "familySurcharge": {
+          "value": 10000,
+          "low": 10000,
+          "high": 10000,
+          "unit": "EUR",
+          "source": "kfw-beg-2026",
+          "asOf": "2026-09-12",
+          "notes": "Einmalig +10.000 € auf Bemessungsgrenze bei mind. 1 minderjährigem Kind im Haushalt (Kindergeld-Berechtigung)."
+        },
+        "tiers": [
+          {
+            "maxTaxableIncomeEUR": 30000,
+            "rate": {
+              "value": 0.4,
+              "low": 0.4,
+              "high": 0.4,
+              "unit": "fraction",
+              "source": "kfw-beg-2026",
+              "asOf": "2026-09-12",
+              "notes": ""
+            }
+          },
+          {
+            "maxTaxableIncomeEUR": 40000,
+            "rate": {
+              "value": 0.3,
+              "low": 0.3,
+              "high": 0.3,
+              "unit": "fraction",
+              "source": "kfw-beg-2026",
+              "asOf": "2026-09-12",
+              "notes": ""
+            }
+          },
+          {
+            "maxTaxableIncomeEUR": 50000,
+            "rate": {
+              "value": 0.1,
+              "low": 0.1,
+              "high": 0.1,
+              "unit": "fraction",
+              "source": "kfw-beg-2026",
+              "asOf": "2026-09-12",
+              "notes": ""
+            }
+          }
+        ]
+      },
+      "capRate": {
+        "default": {
+          "value": 0.7,
+          "low": 0.7,
+          "high": 0.7,
+          "unit": "fraction",
+          "source": "kfw-beg-2026",
+          "asOf": "2026-09-12",
+          "notes": "Obergrenze Grund+Boni je Wohneinheit."
+        },
+        "lowIncome": {
+          "value": 0.8,
+          "low": 0.8,
+          "high": 0.8,
+          "unit": "fraction",
+          "source": "kfw-beg-2026",
+          "asOf": "2026-09-12",
+          "notes": "Bis 80 % wenn zvE ≤30.000 €, bzw. ≤40.000 € unter Berücksichtigung Familienzuschlag."
+        }
+      }
+    },
+    "eligibleCostCaps": {
+      "unit1": {
+        "value": 28000,
+        "low": 28000,
+        "high": 28000,
+        "unit": "EUR",
+        "source": "kfw-beg-2026",
+        "asOf": "2026-09-12",
+        "notes": "Förderhöchstbetrag 1. WE. Sinkt ab 01.02.2027 halbjährlich um 750 € (gleiche Stichtage wie Klimabonus).",
+        "stepDownEUR": 750,
+        "stepScheduleAnchor": "2027-02-01"
+      },
+      "units2to6": {
+        "value": 15000,
+        "low": 15000,
+        "high": 15000,
+        "unit": "EUR",
+        "source": "kfw-beg-2026",
+        "asOf": "2026-09-12",
+        "notes": "Je WE 2–6."
+      },
+      "units7plus": {
+        "value": 8000,
+        "low": 8000,
+        "high": 8000,
+        "unit": "EUR",
+        "source": "kfw-beg-2026",
+        "asOf": "2026-09-12",
+        "notes": "Je weitere WE ab 7."
+      }
+    },
+    "removedAsOf2026_07_21": [
+      "effizienzbonus",
+      "emissionsminderungszuschlag"
+    ],
+    "planned": [
+      {
+        "id": "wertschoepfungsbonus",
+        "earliest": "2027-Q1",
+        "notes": "EU-WP: Grund 30 % weiter möglich; Nicht-EU-WP: Grund auf 15 %. Noch nicht aktiv.",
+        "source": "kfw-beg-2026",
+        "asOf": "2026-09-12"
+      }
+    ]
+  },
+  "bafaBegEmEnvelope": {
+    "administrator": "BAFA",
+    "measure": "Einzelmaßnahmen Gebäudehülle",
+    "baseRate": {
+      "value": 0.15,
+      "low": 0.15,
+      "high": 0.15,
+      "unit": "fraction",
+      "source": "bafa-huelle",
+      "asOf": "2026-09-12",
+      "notes": "Fest 15 %, nicht 15–20 %. Ältere PDF-Übersichten können Vor-Reform sein."
+    },
+    "iSfpBonus": {
+      "rate": {
+        "value": 0.05,
+        "low": 0.05,
+        "high": 0.05,
+        "unit": "fraction",
+        "source": "bmwe-isfp-faq",
+        "asOf": "2026-09-12",
+        "notes": "Ab 21.07.2026 nur auf den Anteil oberhalb des Mindestinvestitionsvolumens; nicht pauschal +5 % auf alles."
+      },
+      "minEligibleInvestment": {
+        "oneUnit": {
+          "value": 30000,
+          "low": 30000,
+          "high": 30000,
+          "unit": "EUR",
+          "source": "bmwe-isfp-faq",
+          "asOf": "2026-09-12",
+          "notes": "EFH: Bonus erst ab ≥30.000 € förderfähig im jeweiligen Antrag."
+        },
+        "multiUnitRule": "Summe der Höchstgrenzen ohne iSFP-Erhöhung (30k + 15k je weiterer WE bis 6)."
+      },
+      "costCapWithBonus": {
+        "unit1": {
+          "value": 60000,
+          "low": 60000,
+          "high": 60000,
+          "unit": "EUR",
+          "source": "bafa-huelle",
+          "asOf": "2026-09-12",
+          "notes": "Mit iSFP-Bonus bzw. wenn Eigentümer nicht iSFP-antragsberechtigt: erhöhte Höchstgrenze."
+        },
+        "units2to6": {
+          "value": 30000,
+          "low": 30000,
+          "high": 30000,
+          "unit": "EUR",
+          "source": "bafa-huelle",
+          "asOf": "2026-09-12",
+          "notes": ""
+        },
+        "units7plus": {
+          "value": 15000,
+          "low": 15000,
+          "high": 15000,
+          "unit": "EUR",
+          "source": "bafa-huelle",
+          "asOf": "2026-09-12",
+          "notes": ""
+        }
+      },
+      "effectiveBlendedRateNote": "Bei EFH 60k mit iSFP: 15% auf 60k + 5% auf 30k = 10.500 € ≈ 17,5 % effektiv — nicht 20 % pauschal. (BMWE-FAQ-Beispiel)"
+    },
+    "minInvestment": {
+      "value": 300,
+      "low": 300,
+      "high": 300,
+      "unit": "EUR",
+      "source": "bafa-huelle",
+      "asOf": "2026-09-12",
+      "notes": "Mindestinvestitionsvolumen brutto für Antrag ohne iSFP-Sonderregel."
+    }
+  },
+  "bafaEbw": {
+    "administrator": "BAFA",
+    "measure": "Energieberatung Wohngebäude / iSFP",
+    "rate": {
+      "value": 0.5,
+      "low": 0.5,
+      "high": 0.5,
+      "unit": "fraction",
+      "source": "bafa-ebw",
+      "asOf": "2026-09-12",
+      "notes": "50 % des förderfähigen Beratungshonorars."
+    },
+    "maxGrant": {
+      "efhZfh": {
+        "value": 650,
+        "low": 650,
+        "high": 650,
+        "unit": "EUR",
+        "source": "bafa-ebw",
+        "asOf": "2026-09-12",
+        "notes": "Ein-/Zweifamilienhaus."
+      },
+      "mfh3plus": {
+        "value": 850,
+        "low": 850,
+        "high": 850,
+        "unit": "EUR",
+        "source": "bafa-ebw",
+        "asOf": "2026-09-12",
+        "notes": "Ab 3 WE."
+      },
+      "wegPresentationBonus": {
+        "value": 250,
+        "low": 250,
+        "high": 250,
+        "unit": "EUR",
+        "source": "bafa-ebw",
+        "asOf": "2026-09-12",
+        "notes": "Einmalig WEG bei Erläuterung in Eigentümerversammlung."
+      }
+    }
+  },
+  "uiHints": {
+    "gmodg": {
+      "note": "Keine 65%-EE-Pflicht mehr im Bestand (GModG). Nicht in Förderberechnung mischen.",
+      "asOf": "2026-09-12",
+      "confidence": "product_context"
+    }
+  }
+}
