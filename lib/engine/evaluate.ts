@@ -399,6 +399,17 @@ function collectFacts(
         : "unbekannt",
     draft.hasPv === "unknown" || (draft.hasPv === "yes" && !draft.existingPvKwp) ? "assumed" : "entered",
   );
+  {
+    const have = draft.existingBatteryKwh;
+    const want = draft.batteryKwhOverride;
+    if (have) {
+      push("battery", COPY.factBatteryHave, `${round1(have)} kWh`, "entered");
+    } else if (want) {
+      push("battery", COPY.factBatteryWanted, `${round1(want)} kWh`, "entered");
+    } else {
+      push("battery", COPY.factBatteryGuess, "wir legen eine Größe fest", "assumed");
+    }
+  }
   if (draft.hasEv === "yes" || draft.hasEv === "planned") {
     push(
       "chargeHome",

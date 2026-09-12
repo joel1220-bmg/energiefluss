@@ -75,6 +75,9 @@ export const COPY = {
   jetztErtrag: "Ertrags-Spanne verstehen — noch ohne Angebot",
   jetztBestehend: "Bestehende Anlagengröße notieren",
   jetztSpeicher: "Nur die Speicher-Spanne verstehen — noch ohne Angebot",
+  factBatteryWanted: "Speicherwunsch",
+  factBatteryGuess: "Speicher (Schätzung)",
+  factBatteryHave: "Speicher vorhanden",
   paybackNote:
     "Das ist die grobe Mitte. Kann kürzer oder länger werden. Kein Finanzplan.",
 } as const;
