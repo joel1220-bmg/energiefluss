@@ -13,7 +13,7 @@ export const COPY = {
   landingTileSize: "Größe",
   landingTileSizeBody: "Empfohlene PV in kWp und Speicher in kWh — als Spanne, kein Punktwert.",
   landingTileCost: "Kosten / Spanne",
-  landingTileCostBody: "Brutto-Kosten, Eigenverbrauch und Autarkie grob — Orientierung, kein Angebot.",
+  landingTileCostBody: "Kosten als Spanne (oft 0 % MwSt. bei privater PV), Eigenverbrauch und Autarkie grob.",
   qPlz: "In welcher Postleitzahl steht Ihr Haus?",
   plzHint: "Ohne PLZ bleiben Ertrag und Standort grober.",
   qHousehold: "Wie hoch ist Ihr Strombedarf im Haushalt?",
@@ -45,6 +45,14 @@ export const COPY = {
   ftEvKm: "E-Auto km/Jahr",
   ftWpKwh: "Wärmepumpe kWh/Jahr",
   ftCost: "Kostenband (±30 %)",
+  unitExplain: "kWp = Leistung der Solaranlage. kWh = Inhalt des Speichers.",
+  vatNote:
+    "Viele private PV-Anlagen in DE sind seit 2023 mit 0 % MwSt. ausgewiesen. Unsere Spanne ist eine grobe Endpreis-Orientierung, kein Steuerbescheid.",
+  plzPriceNote:
+    "Mit Postleitzahl nutzen wir den lokalen Solarertrag. Das kann die empfohlene Größe und damit die Kostenspanne gegenüber einer Schätzung ohne PLZ verschieben.",
+  morningStep: "Morgen: Zählerstand oder letzte Stromrechnung bereitlegen.",
+  paybackNote:
+    "Grobe Amortisation: Anlagekosten geteilt durch ersparten Netzstrom plus Einspeiseerlös. Strompreis bleibt nicht stehen — kein Finanzplan.",
 } as const;
 
 export const EV_CHIP: Record<EvState, string> = {
@@ -70,17 +78,17 @@ export const HORIZON_COPY = {
   intro: "So könnten Sie vorgehen — grobe Reihenfolge, keine Pflicht.",
   jetzt: {
     title: "Jetzt",
-    sub: "Angebot mit kWp/Speicher-Spanne einholen",
+    sub: "Dach und Ertrag grob verstehen",
     empty: "—",
   },
   bald: {
     title: "Bald",
-    sub: "E-Auto-Laden / Wallbox mitdenken",
+    sub: "Spanne mit Zählerwerten enger machen",
     empty: "—",
   },
   spaeter: {
     title: "Später",
-    sub: "Feinschliff mit Verbrauchsdaten vom Zähler",
+    sub: "Angebote in der engeren Spanne einholen",
     empty: "—",
   },
 } as const;

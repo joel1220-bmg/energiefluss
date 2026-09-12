@@ -269,6 +269,7 @@ export function evaluate(partial: Partial<Draft>): Evaluation {
   const confidence = scoreConfidence(draft, loads);
   const warnings: string[] = [];
   if (!draft.plz) warnings.push(COPY.plzHint);
+  else warnings.push(COPY.plzPriceNote);
   if (household.assumed) warnings.push(COPY.qHouseholdEmpty);
   if (!recommendPv) warnings.push("Photovoltaik bereits vorhanden — kein zweites Vollsystem empfohlen.");
   warnings.push(COPY.grantDisclaimer);
@@ -277,21 +278,21 @@ export function evaluate(partial: Partial<Draft>): Evaluation {
 
   const nextSteps = [
     {
+      id: "morning",
+      label: COPY.morningStep,
+      detail: "Ohne echte kWh bleibt alles eine grobe Spanne.",
+    },
+    {
       id: "print",
       label: "Diese Orientierung sichern",
       detail: "Drucken oder als PDF speichern — bleibt sonst nur in diesem Browser.",
     },
     {
       id: "offers",
-      label: "Zwei bis drei Angebote",
+      label: "Später: zwei bis drei Angebote",
       detail: recommendPv
-        ? "Mit kWp- und Speicher-Spanne, nicht mit einem Punktwert."
+        ? "Erst wenn die kWh-Zahlen sitzen. Mit Spanne, nicht mit einem Punktwert."
         : "Zur Speicher-/Wallbox-Nachrüstung an der bestehenden Anlage.",
-    },
-    {
-      id: "meter",
-      label: "Zählerdaten nachziehen",
-      detail: "Jahresverbrauch und Ladeanteil machen die Spanne enger.",
     },
   ];
 

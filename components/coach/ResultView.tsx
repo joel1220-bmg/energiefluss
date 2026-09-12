@@ -18,6 +18,29 @@ function PctBand({ low, high }: { low: number; high: number }) {
   );
 }
 
+function Payback({ result }: { result: Evaluation }) {
+  const saveLow = Math.max(
+    80,
+    result.electricityCostNow.low - result.electricityCostWithSystem.high + result.feedInRevenue.low,
+  );
+  const saveHigh = Math.max(
+    80,
+    result.electricityCostNow.high - result.electricityCostWithSystem.low + result.feedInRevenue.high,
+  );
+  const cost = result.recommendPv ? result.costPvBattery : result.costPvBattery;
+  const yLow = Math.max(4, Math.round(cost.low / saveHigh));
+  const yHigh = Math.min(28, Math.round(cost.high / saveLow));
+  return (
+    <div className="mt-3 rounded-2xl border border-line bg-card p-4">
+      <p className="text-xs uppercase tracking-wide text-muted">Amortisation grob</p>
+      <p className="mt-1 text-xl font-semibold tabular-nums">
+        {formatDeNumber(Math.min(yLow, yHigh))}–{formatDeNumber(Math.max(yLow, yHigh))} Jahre
+      </p>
+      <p className="mt-2 text-sm text-muted">{COPY.paybackNote}</p>
+    </div>
+  );
+}
+
 function HorizonPath({ path }: { path: Evaluation["path"] }) {
   return (
     <div className="mt-4">
@@ -95,9 +118,10 @@ export function ResultView({
           </p>
         </div>
       </div>
-      <p className="mt-2 text-sm text-muted">{result.spanNote}</p>
+      <p className="mt-2 text-sm text-muted">{COPY.unitExplain}</p>
+      <p className="mt-1 text-sm text-muted">{result.spanNote}</p>
 
-      <h2 className="serif mt-8 text-2xl text-forest">Kosten brutto (Spanne)</h2>
+      <h2 className="serif mt-8 text-2xl text-forest">Kosten (Orientierung)</h2>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {(
           [
@@ -114,7 +138,9 @@ export function ResultView({
           </div>
         ))}
       </div>
-      <p className="mt-2 text-xs text-muted">{result.grantDisclaimer} EEG-Einspeisung Seed ~{formatDeNumber(result.feedInCt.low, 1)}–{formatDeNumber(result.feedInCt.high, 1)} ct/kWh.</p>
+      <p className="mt-2 text-sm text-muted">{COPY.vatNote}</p>
+      <p className="mt-1 text-sm text-muted">{COPY.plzPriceNote}</p>
+      <p className="mt-1 text-xs text-muted">{result.grantDisclaimer} EEG-Einspeisung grob ~{formatDeNumber(result.feedInCt.low, 1)}–{formatDeNumber(result.feedInCt.high, 1)} ct/kWh.</p>
 
       <h2 className="serif mt-8 text-2xl text-forest">Eigenverbrauch &amp; Autarkie</h2>
       <dl className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -165,6 +191,8 @@ export function ResultView({
           </p>
         </div>
       </div>
+      <Payback result={result} />
+
       <div className="mt-3 rounded-2xl border border-line bg-card p-4">
         <p className="text-xs uppercase tracking-wide text-muted">CO₂ grob vermieden / Jahr</p>
         <p className="mt-1 text-xl font-semibold tabular-nums">
