@@ -118,20 +118,10 @@ export function ResultView({
       <h1 className="serif mt-2 text-[1.7rem] leading-snug text-forest sm:text-4xl">{result.houseSentence}</h1>
       <p className="mt-3 text-base text-ink">{result.pathSentence}</p>
       <p className="mt-3 text-sm text-muted">
-        Sicherheit: <strong className="text-ink">{result.confidence.level}</strong> ({result.confidence.score} von 76).
+        Sicherheit: <strong className="text-ink">{result.confidence.level}</strong>.
         Keine zertifizierte Beratung.
       </p>
-      <p className="mt-2 text-sm">
-        <button
-          type="button"
-          className="underline decoration-line underline-offset-2"
-          title={result.gmodgNote}
-          aria-label={result.gmodgNote}
-        >
-          Hinweis GEG / GModG
-        </button>
-        <span className="text-muted"> — {result.gmodgNote}</span>
-      </p>
+      <p className="mt-2 text-sm text-muted">{result.gmodgNote}</p>
 
       <section className="mt-8 rounded-2xl border-2 border-forest/20 bg-card p-4">
         <ChipGroup
@@ -416,9 +406,9 @@ function FineTune({ draft, onChange }: { draft: Draft; onChange: (p: Partial<Dra
         value={draft.incomeBand}
         onChange={(incomeBand) => onChange({ incomeBand })}
         options={[
-          { value: "upto30k", label: "bis 30 T€" },
-          { value: "upto40k", label: "bis 40 T€" },
-          { value: "upto50k", label: "bis 50 T€" },
+          { value: "upto30k", label: "bis 30.000 €" },
+          { value: "upto40k", label: "bis 40.000 €" },
+          { value: "upto50k", label: "bis 50.000 €" },
           { value: "above", label: "darüber" },
           { value: "preferNot", label: "Lieber nicht angeben" },
         ]}

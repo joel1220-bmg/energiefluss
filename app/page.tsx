@@ -20,7 +20,7 @@ export default function HomePage() {
       </div>
       <ol className="mt-14 grid gap-4 sm:grid-cols-3">
         {[
-          ["Vier Fragen", "PLZ, Typ, Baujahr, Heizung. Weiß ich nicht ist immer erlaubt."],
+          ["Vier Angaben", "PLZ, Typ, Baujahr, Heizung. Weiß ich nicht ist immer erlaubt."],
           ["Sofort eine Spanne", "Kein falsches Punkt-Euro. Annahmen sichtbar."],
           ["Dann Feinschliff", "Dämmung, Wohnfläche, Preise — live nachziehen."],
         ].map(([t, d]) => (

@@ -22,7 +22,7 @@ export type Condition = "original" | "partial" | "renewed" | "none" | "unknown";
 export type Goal = "cost" | "comfort" | "climate" | "independence";
 export type IncomeBand = "upto30k" | "upto40k" | "upto50k" | "above" | "preferNot";
 export type Horizon = "jetzt" | "bald" | "spaeter";
-export type ConfidenceLevel = "niedrig" | "mittel" | "mittelhoch";
+export type ConfidenceLevel = "noch grob" | "mittel" | "schon brauchbar";
 
 export type MeasureId =
   | "hydraulicBalancing"

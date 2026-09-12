@@ -703,7 +703,7 @@ function scoreConfidence(draft: Draft, heat: HeatResult): Evaluation["confidence
   if (draft.windows !== "unknown") score += 3;
   if (draft.incomeBand !== "preferNot") score += 3;
   score = Math.min(76, score);
-  const level = score < 42 ? "niedrig" : score < 62 ? "mittel" : "mittelhoch";
+  const level = score < 42 ? "noch grob" : score < 62 ? "mittel" : "schon brauchbar";
   return { level, score, reasons };
 }
 

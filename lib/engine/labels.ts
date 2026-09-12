@@ -38,7 +38,7 @@ export const BUILDING_LABEL: Record<BuildingType, string> = {
 };
 
 export const BUILDING_CHIP: Record<BuildingType, string> = {
-  EFH: "EFH",
+  EFH: "Einfamilienhaus",
   DHH: "Doppelhaushälfte",
   RH: "Reihenhaus",
   MFH: "kleines Mehrfamilienhaus",
@@ -77,7 +77,7 @@ export const MEASURE_TITLE: Record<MeasureId, string> = {
   topFloorCeiling: "Oberste Geschossdecke",
   basementCeiling: "Kellerdecke",
   roofInsulation: "Dachdämmung",
-  wdvs: "Fassade (WDVS)",
+  wdvs: "Fassadendämmung",
   windowTriple: "Fenster (3-fach)",
   heatPumpAirWater: "Luft-Wasser-Wärmepumpe",
   pvWithStorage: "Photovoltaik mit Speicher",
