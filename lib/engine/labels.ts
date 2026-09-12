@@ -98,6 +98,13 @@ export const MEASURE_SHORT: Record<MeasureId, string> = {
   ventilationCentral: "Lüftung",
 };
 
+export const HORIZON_COPY = {
+  intro: "So könnten Sie vorgehen — grobe Reihenfolge, keine Pflicht.",
+  jetzt: { title: "Jetzt", sub: "Zuerst sinnvoll", empty: "Noch nichts Dringendes" },
+  bald: { title: "Bald", sub: "Danach angehen", empty: "—" },
+  spaeter: { title: "Später", sub: "Wenn Hülle und Hydraulik passen", empty: "—" },
+} as const;
+
 export const MEASURE_TECHNICAL: Partial<Record<MeasureId, string>> = {
   topFloorCeiling: "Fachlich: oberste Geschossdecke",
   wdvs: "Fachlich: WDVS",

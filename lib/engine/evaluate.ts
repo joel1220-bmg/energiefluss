@@ -21,6 +21,7 @@ import {
   DECADE_CHIP,
   HEATING_CHIP,
   INSULATION_CHIP,
+  MEASURE_SHORT,
   MEASURE_TITLE,
   houseSentence,
   pathSentence,
@@ -202,6 +203,8 @@ function measure(
   };
   return {
     ...partial,
+    title: MEASURE_TITLE[partial.id],
+    shortTitle: MEASURE_SHORT[partial.id],
     applicable: partial.applicable !== false,
     net: sortRange(net),
     paybackYears: payback(sortRange(net), partial.savingEurYear),
