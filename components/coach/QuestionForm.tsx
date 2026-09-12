@@ -175,9 +175,53 @@ export function QuestionForm({
       <ChipGroup
         legend={COPY.qPv}
         value={draft.hasPv}
-        onChange={(hasPv) => onChange({ hasPv })}
+        onChange={(hasPv) =>
+          onChange({
+            hasPv,
+            ...(hasPv !== "yes" ? { existingPvKwp: null } : {}),
+          })
+        }
         options={PVS.map((value) => ({ value, label: HAS_PV_CHIP[value] }))}
       />
+
+      {draft.hasPv === "yes" ? (
+        <Field label={COPY.qPvKwp} hint={COPY.qPvKwpHint}>
+          <input
+            className={inputClass}
+            inputMode="decimal"
+            value={draft.existingPvKwp ?? ""}
+            onChange={(e) => onChange({ existingPvKwp: parseDeNumber(e.target.value) })}
+            placeholder="z. B. 8,5"
+          />
+        </Field>
+      ) : null}
+
+      <ChipGroup
+        legend={COPY.qBattery}
+        value={draft.hasBattery}
+        onChange={(hasBattery) =>
+          onChange({
+            hasBattery,
+            ...(hasBattery !== "yes" ? { existingBatteryKwh: null } : {}),
+          })
+        }
+        options={TRIS.map((value) => ({ value, label: TRI_CHIP[value] }))}
+      />
+
+      {draft.hasBattery === "yes" || draft.hasBattery === "unknown" ? (
+        <Field label={COPY.qBatteryKwh} hint={COPY.qBatteryKwhHint}>
+          <input
+            className={inputClass}
+            inputMode="decimal"
+            value={draft.existingBatteryKwh ?? ""}
+            onChange={(e) => {
+              const n = parseDeNumber(e.target.value);
+              onChange({ existingBatteryKwh: n, batteryKwhOverride: n });
+            }}
+            placeholder="z. B. 10"
+          />
+        </Field>
+      ) : null}
 
       {unknownUsed ? <p className="text-sm text-muted">{COPY.unknownHelp}</p> : null}
 

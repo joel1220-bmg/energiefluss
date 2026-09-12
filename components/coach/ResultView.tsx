@@ -316,6 +316,30 @@ function FineTune({
           onChange={(e) => onChange({ batteryKwhOverride: Number(e.target.value) })}
         />
       </Field>
+      <Field label={COPY.ftBatteryExact} hint="Direkt in kWh, z. B. 10">
+        <input
+          className={inputClass}
+          inputMode="decimal"
+          value={draft.batteryKwhOverride ?? draft.existingBatteryKwh ?? ""}
+          onChange={(e) => {
+            const n = parseDeNumber(e.target.value);
+            onChange({ batteryKwhOverride: n, existingBatteryKwh: n });
+          }}
+          placeholder="z. B. 10"
+        />
+      </Field>
+      <Field label={COPY.ftPvExact} hint="Direkt in kWp, z. B. 8,5">
+        <input
+          className={inputClass}
+          inputMode="decimal"
+          value={draft.pvKwpOverride ?? draft.existingPvKwp ?? ""}
+          onChange={(e) => {
+            const n = parseDeNumber(e.target.value);
+            onChange({ pvKwpOverride: n, existingPvKwp: n });
+          }}
+          placeholder="z. B. 8,5"
+        />
+      </Field>
       <Field label={`${COPY.ftEvKm}: ${formatDeNumber(km)}`}>
         <input
           type="range"

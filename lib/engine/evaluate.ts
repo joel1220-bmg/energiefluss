@@ -154,7 +154,7 @@ export function evaluate(partial: Partial<Draft>): Evaluation {
     mid: round1(pvMid),
     high: round1(pvMid * 1.2),
   });
-  pvKwp = applyOverride(pvKwp, draft.pvKwpOverride);
+  pvKwp = applyOverride(pvKwp, draft.pvKwpOverride ?? draft.existingPvKwp);
   pvKwp = {
     low: round1(clamp(pvKwp.low, 2, 20)),
     mid: round1(clamp(pvKwp.mid, 2, 20)),
@@ -170,7 +170,7 @@ export function evaluate(partial: Partial<Draft>): Evaluation {
     mid: round1((batBaseLow + batBaseHigh) / 2 + (ev.active ? 2 : 0)),
     high: round1(batBaseHigh + evBonusHigh),
   });
-  batteryKwh = applyOverride(batteryKwh, draft.batteryKwhOverride);
+  batteryKwh = applyOverride(batteryKwh, draft.batteryKwhOverride ?? draft.existingBatteryKwh);
 
   // Self-consumption / autarky — conservative bands
   const scNo = pctRange(0.25, 0.35);

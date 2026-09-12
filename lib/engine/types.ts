@@ -19,6 +19,9 @@ export type Draft = {
   hasHeatPump: TriState | null;
   heatPumpKwhYear: number | null;
   hasPv: HasPvState;
+  existingPvKwp: number | null;
+  hasBattery: TriState | null;
+  existingBatteryKwh: number | null;
   /** EUR per kWh override; null = seed price */
   priceElectricity: number | null;
   /** Fine-tune overrides; null = engine recommendation mid */
@@ -101,6 +104,9 @@ export function emptyDraft(asOf = "2026-09-12"): Draft {
     hasHeatPump: null,
     heatPumpKwhYear: null,
     hasPv: "unknown",
+    existingPvKwp: null,
+    hasBattery: null,
+    existingBatteryKwh: null,
     priceElectricity: null,
     pvKwpOverride: null,
     batteryKwhOverride: null,
