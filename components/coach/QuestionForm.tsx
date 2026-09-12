@@ -28,10 +28,14 @@ export function QuestionForm({
   draft,
   onChange,
   onSubmit,
+  remember,
+  onRemember,
 }: {
   draft: Draft;
   onChange: (patch: Partial<Draft>) => void;
   onSubmit: () => void;
+  remember: boolean;
+  onRemember: (on: boolean) => void;
 }) {
   const unknownUsed =
     draft.buildingType === "unknown" || draft.decade === "unknown" || draft.heating === "unknown";
@@ -99,6 +103,19 @@ export function QuestionForm({
       />
 
       {unknownUsed ? <p className="text-sm text-muted">{COPY.unknownHelp}</p> : null}
+
+      <label className="flex min-h-10 items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          className="mt-1"
+          checked={remember}
+          onChange={(e) => onRemember(e.target.checked)}
+        />
+        <span>
+          Angaben merken — nur in diesem Browser, kein Konto.
+          {!remember ? " Ohne Haken bleibt nichts gespeichert." : ""}
+        </span>
+      </label>
 
       <button
         type="submit"

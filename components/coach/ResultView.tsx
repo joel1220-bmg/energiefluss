@@ -132,12 +132,16 @@ export function ResultView({
   onChange,
   onReset,
   onEditQuestions,
+  remember,
+  onRemember,
 }: {
   draft: Draft;
   result: Evaluation;
   onChange: (patch: Partial<Draft>) => void;
   onReset: () => void;
   onEditQuestions: () => void;
+  remember: boolean;
+  onRemember: (on: boolean) => void;
 }) {
   const [drawer, setDrawer] = useState(false);
   const drawerId = useId();
@@ -178,6 +182,15 @@ export function ResultView({
             Fragen ändern
           </button>
         </div>
+        <label className="mt-3 flex min-h-10 items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={remember}
+            onChange={(e) => onRemember(e.target.checked)}
+          />
+          <span>Angaben merken — nur in diesem Browser.</span>
+        </label>
       </section>
 
       <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -436,6 +449,15 @@ function FineTune({ draft, onChange }: { draft: Draft; onChange: (p: Partial<Dra
           { value: "off", label: "Nicht ansetzen" },
         ]}
       />
+      <label className="flex min-h-10 items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          className="mt-1"
+          checked={draft.hasMinorChild}
+          onChange={(e) => onChange({ hasMinorChild: e.target.checked })}
+        />
+        <span>Mindestens ein Kind mit Kindergeld im Haushalt (nur für den Einkommensbonus).</span>
+      </label>
       <ChipGroup
         legend={COPY.ftIncome}
         value={draft.incomeBand}

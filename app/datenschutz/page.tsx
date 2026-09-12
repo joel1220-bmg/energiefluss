@@ -11,9 +11,10 @@ export default function DatenschutzPage() {
       <p className="mt-2">[Name, Anschrift, Kontakt — Platzhalter]</p>
       <h2 className="serif mt-8 text-xl">Verarbeitung</h2>
       <p className="mt-2">
-        Der Haus-Coach rechnet ausschließlich in Ihrem Browser. Angaben werden optional in{" "}
-        <code>localStorage</code> dieses Geräts gespeichert. Es gibt kein Nutzerkonto, keinen Server für
-        Ihre Hausdaten, keinen Newsletter und keine Tracker oder Werbung.
+        Der Haus-Coach rechnet ausschließlich in Ihrem Browser. Nur wenn Sie „Angaben merken“
+        ankreuzen, speichert dieser Browser den Entwurf in <code>localStorage</code>. Ohne Haken
+        wird nichts geschrieben. Es gibt kein Nutzerkonto, keinen Server für Ihre Hausdaten, keinen
+        Newsletter und keine Tracker oder Werbung.
       </p>
       <h2 className="serif mt-8 text-xl">Ihre Rechte</h2>
       <p className="mt-2">
