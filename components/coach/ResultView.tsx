@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import type { Draft, Evaluation, Insulation, MeasureId, MeasureResult, Range } from "@/lib/engine/types";
-import { COPY, INSULATION_CHIP, MEASURE_TECHNICAL, MEASURE_TITLE } from "@/lib/engine/labels";
+import { COPY, INSULATION_CHIP, MEASURE_SHORT, MEASURE_TECHNICAL, MEASURE_TITLE } from "@/lib/engine/labels";
 import { formatDeNumber, formatRangeEUR, formatRangeKwh, formatYears, parseDeNumber } from "@/lib/engine/parse";
 import { Accordion, ChipGroup, Field, inputClass } from "./ui";
 
@@ -19,23 +19,33 @@ function Band({ r, suffix = "" }: { r: Range; suffix?: string }) {
 function HorizonPath({ measures }: { measures: MeasureResult[] }) {
   const order = ["jetzt", "bald", "spaeter"] as const;
   const label = { jetzt: "Jetzt", bald: "Bald", spaeter: "Später" };
+  const sub = {
+    jetzt: "Zuerst sinnvoll",
+    bald: "Danach angehen",
+    spaeter: "Wenn Hülle/Hydraulik passen",
+  };
+  const empty = { jetzt: "Noch nichts Dringendes", bald: "—", spaeter: "—" };
   return (
-    <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-      {order.map((h) => {
-        const items = measures.filter((m) => m.applicable && m.horizon === h).slice(0, 3);
-        return (
-          <article key={h} className="rounded-2xl border border-line bg-card p-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-moss">{label[h]}</p>
-            <ul className="mt-2 space-y-1 text-sm">
-              {items.length ? (
-                items.map((m) => <li key={m.id}>{m.title}</li>)
-              ) : (
-                <li className="text-muted">nichts Dringendes</li>
-              )}
-            </ul>
-          </article>
-        );
-      })}
+    <div className="mt-4">
+      <p className="text-sm text-muted">So könnten Sie vorgehen — grobe Reihenfolge, keine Pflicht.</p>
+      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
+        {order.map((h) => {
+          const items = measures.filter((m) => m.applicable && m.horizon === h).slice(0, 3);
+          return (
+            <article key={h} className="rounded-2xl border border-line bg-card p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-moss">{label[h]}</p>
+              <p className="mt-1 text-sm text-muted">{sub[h]}</p>
+              <ul className="mt-2 space-y-1 text-sm">
+                {items.length ? (
+                  items.map((m) => <li key={m.id}>{MEASURE_SHORT[m.id]}</li>)
+                ) : (
+                  <li className="text-muted">{empty[h]}</li>
+                )}
+              </ul>
+            </article>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -168,7 +178,7 @@ export function ResultView({
             className="min-h-11 rounded-full bg-forest px-4 text-sm font-semibold text-paper"
             onClick={() => setDrawer(true)}
           >
-            Feinschliff
+            Feinschliff — Angaben nachziehen
           </button>
           <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={onEditQuestions}>
             Fragen ändern

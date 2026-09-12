@@ -85,6 +85,19 @@ export const MEASURE_TITLE: Record<MeasureId, string> = {
   energyAdvice: "Energieberatung / iSFP",
 };
 
+export const MEASURE_SHORT: Record<MeasureId, string> = {
+  energyAdvice: "Energieberatung",
+  hydraulicBalancing: "Heizungsabgleich",
+  topFloorCeiling: "Dachboden-Decke dämmen",
+  basementCeiling: "Kellerdecke dämmen",
+  roofInsulation: "Dach dämmen",
+  wdvs: "Fassade dämmen",
+  windowTriple: "Fenster erneuern",
+  heatPumpAirWater: "Wärmepumpe",
+  pvWithStorage: "Solarstrom",
+  ventilationCentral: "Lüftung",
+};
+
 export const MEASURE_TECHNICAL: Partial<Record<MeasureId, string>> = {
   topFloorCeiling: "Fachlich: oberste Geschossdecke",
   wdvs: "Fachlich: WDVS",
