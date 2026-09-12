@@ -30,6 +30,8 @@ export const COPY = {
   qBattery: "Haben Sie schon einen Stromspeicher?",
   qBatteryKwh: "Wie groß ist Ihr Speicher — oder welchen möchten Sie?",
   qBatteryKwhHint: "kWh direkt eintragen. Leer = wir schätzen.",
+  qBatteryWanted: "Welchen Speicher möchten Sie?",
+  qBatteryWantedHint: "kWh tippen, auch wenn Sie noch keinen haben. Leer = wir schätzen.",
   qChargeHome: "Laden Sie zu Hause — eher abends?",
   qChargeHomeHint: "Abends laden heißt oft: etwas mehr Speicher.",
   qWallboxKw: "Wallbox in kW, falls vorhanden oder geplant",

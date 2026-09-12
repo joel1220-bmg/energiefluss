@@ -227,17 +227,25 @@ export function QuestionForm({
         options={TRIS.map((value) => ({ value, label: TRI_CHIP[value] }))}
       />
 
-      {draft.hasBattery === "yes" || draft.hasBattery === "unknown" ? (
-        <Field label={COPY.qBatteryKwh} hint={`${COPY.qBatteryKwhHint} ${COPY.eveningHint}`}>
+      {draft.hasBattery ? (
+        <Field
+          label={draft.hasBattery === "yes" ? COPY.qBatteryKwh : COPY.qBatteryWanted}
+          hint={`${draft.hasBattery === "yes" ? COPY.qBatteryKwhHint : COPY.qBatteryWantedHint} ${COPY.eveningHint}`}
+        >
           <input
             className={inputClass}
             inputMode="decimal"
-            value={draft.existingBatteryKwh ?? ""}
+            value={
+              draft.hasBattery === "yes"
+                ? (draft.existingBatteryKwh ?? "")
+                : (draft.batteryKwhOverride ?? "")
+            }
             onChange={(e) => {
               const n = parseDeNumber(e.target.value);
-              onChange({ existingBatteryKwh: n, batteryKwhOverride: n });
+              if (draft.hasBattery === "yes") onChange({ existingBatteryKwh: n, batteryKwhOverride: n });
+              else onChange({ existingBatteryKwh: null, batteryKwhOverride: n });
             }}
-            placeholder="z. B. 10"
+            placeholder="z. B. 5"
           />
         </Field>
       ) : null}
