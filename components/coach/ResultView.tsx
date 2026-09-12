@@ -1,40 +1,43 @@
 "use client";
 
 import { useId, useState } from "react";
-import type { Draft, Evaluation, Insulation, MeasureId, MeasureResult, Range } from "@/lib/engine/types";
-import { COPY, HORIZON_COPY, INSULATION_CHIP, MEASURE_TECHNICAL, MEASURE_TITLE } from "@/lib/engine/labels";
-import { formatDeNumber, formatRangeEUR, formatRangeKwh, formatYears, parseDeNumber } from "@/lib/engine/parse";
-import { Accordion, ChipGroup, Field, inputClass } from "./ui";
+import type { Draft, Evaluation, Range } from "@/lib/engine/types";
+import { COPY, HORIZON_COPY } from "@/lib/engine/labels";
+import { formatDeNumber, formatRangeEUR, parseDeNumber } from "@/lib/engine/parse";
+import { Accordion, Field, inputClass } from "./ui";
 
-function Band({ r, suffix = "" }: { r: Range; suffix?: string }) {
+function Band({ r }: { r: Range }) {
+  return <span className="tabular-nums">{formatRangeEUR(r.low, r.high)}</span>;
+}
+
+function PctBand({ low, high }: { low: number; high: number }) {
   return (
     <span className="tabular-nums">
-      {formatRangeEUR(r.low, r.high)}
-      {suffix}
+      {formatDeNumber(Math.round(low * 100))}–{formatDeNumber(Math.round(high * 100))}&nbsp;%
     </span>
   );
 }
 
-
-function HorizonPath({ measures }: { measures: MeasureResult[] }) {
-  const order = ["jetzt", "bald", "spaeter"] as const;
+function HorizonPath({ path }: { path: Evaluation["path"] }) {
   return (
     <div className="mt-4">
       <p className="text-sm text-muted">{HORIZON_COPY.intro}</p>
       <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
-        {order.map((h) => {
-          const copy = HORIZON_COPY[h];
-          const items = measures.filter((m) => m.applicable && m.horizon === h).slice(0, 3);
+        {path.map((card) => {
+          const tone =
+            card.horizon === "jetzt"
+              ? "border-forest/30"
+              : card.horizon === "bald"
+                ? "border-bald/40"
+                : "border-spaeter/40";
           return (
-            <article key={h} className="rounded-2xl border border-line bg-card p-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-moss">{copy.title}</p>
-              <p className="mt-1 text-sm text-muted">{copy.sub}</p>
-              <ul className="mt-2 space-y-1 text-sm">
-                {items.length ? (
-                  items.map((m) => <li key={m.id}>{m.shortTitle}</li>)
-                ) : (
-                  <li className="text-muted">{copy.empty}</li>
-                )}
+            <article key={card.horizon} className={`rounded-2xl border bg-card p-4 ${tone}`}>
+              <p className="text-xs font-medium uppercase tracking-wide text-moss">{card.title}</p>
+              <p className="mt-1 text-sm font-medium text-ink">{card.sub}</p>
+              <ul className="mt-2 space-y-1 text-sm text-muted">
+                {card.items.slice(0, 3).map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
               </ul>
             </article>
           );
@@ -43,88 +46,6 @@ function HorizonPath({ measures }: { measures: MeasureResult[] }) {
     </div>
   );
 }
-
-function HorizonBadge({ h }: { h: MeasureResult["horizon"] }) {
-  const map = {
-    jetzt: { t: HORIZON_COPY.jetzt.title, c: "bg-jetzt text-paper" },
-    bald: { t: HORIZON_COPY.bald.title, c: "bg-bald text-paper" },
-    spaeter: { t: HORIZON_COPY.spaeter.title, c: "bg-spaeter text-paper" },
-  }[h];
-  return <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${map.c}`}>{map.t}</span>;
-}
-
-function MeasureCard({ m, disclaimer }: { m: MeasureResult; disclaimer: string }) {
-  if (!m.applicable) return null;
-  return (
-    <article className="rounded-2xl border border-line bg-card p-4">
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="serif text-xl text-forest">{m.title}</h3>
-        <HorizonBadge h={m.horizon} />
-      </div>
-      <p className="mt-2 text-sm text-muted">{m.summary}</p>
-      {MEASURE_TECHNICAL[m.id] ? (
-        <p className="mt-1 text-xs text-muted">{MEASURE_TECHNICAL[m.id]}</p>
-      ) : null}
-      <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-        <div>
-          <dt className="text-muted">Kosten</dt>
-          <dd className="text-lg font-semibold tabular-nums">
-            <Band r={m.cost} />
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted">Zuschuss</dt>
-          <dd className="text-lg font-semibold tabular-nums">
-            <Band r={m.grant} />
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted">Netto</dt>
-          <dd className="tabular-nums">
-            <Band r={m.net} />
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted">Ersparnis / Jahr</dt>
-          <dd className="tabular-nums">
-            <Band r={m.savingEurYear} />
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted">Amortisation</dt>
-          <dd>
-            {m.paybackYears
-              ? `${formatYears(m.paybackYears.low).replace(" Jahre", "")}–${formatYears(m.paybackYears.high)}`
-              : "kein belastbarer Wert"}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-muted">CO₂ / Jahr</dt>
-          <dd className="tabular-nums">
-            {formatDeNumber(Math.round(m.co2kgYear.low / 10) * 10)}–
-            {formatDeNumber(Math.round(m.co2kgYear.high / 10) * 10)} kg
-          </dd>
-        </div>
-      </dl>
-      <p className="mt-3 text-xs text-muted">
-        {m.grantProgram}. {disclaimer}
-      </p>
-      {m.risk ? <p className="mt-1 text-xs text-warn">Risiko: {m.risk}</p> : null}
-    </article>
-  );
-}
-
-const DONE_OPTIONS: MeasureId[] = [
-  "hydraulicBalancing",
-  "topFloorCeiling",
-  "basementCeiling",
-  "roofInsulation",
-  "wdvs",
-  "windowTriple",
-  "heatPumpAirWater",
-  "pvWithStorage",
-  "energyAdvice",
-];
 
 export function ResultView({
   draft,
@@ -152,62 +73,134 @@ export function ResultView({
     <div className="mx-auto max-w-3xl px-4 py-8">
       <p className="text-sm uppercase tracking-[0.12em] text-moss">Ergebnis</p>
       <h1 className="serif mt-2 text-[1.7rem] leading-snug text-forest sm:text-4xl">{result.houseSentence}</h1>
-      <HorizonPath measures={result.measures} />
+      <p className="mt-3 text-base text-ink">{result.recommendSentence}</p>
+      <HorizonPath path={result.path} />
       <p className="mt-3 text-sm text-muted">
-        Sicherheit: <strong className="text-ink">{result.confidence.level}</strong>.
-        Keine zertifizierte Beratung.
+        Sicherheit: <strong className="text-ink">{result.confidence.level}</strong>. {COPY.underCta}
       </p>
-      <p className="mt-2 text-sm text-muted">{result.gmodgNote}</p>
 
-      <section className="mt-8 rounded-2xl border-2 border-forest/20 bg-card p-4">
-        <ChipGroup
-          legend={COPY.insulationQ}
-          value={draft.insulation}
-          onChange={(insulation: Insulation) => onChange({ insulation })}
-          options={(["weak", "mixed", "good", "unknown"] as Insulation[]).map((value) => ({
-            value,
-            label: INSULATION_CHIP[value],
-          }))}
-          help={COPY.insulationHint}
-        />
-        <div className="no-print mt-4 flex flex-wrap gap-2">
-          <button
-            type="button"
-            className="min-h-11 rounded-full bg-forest px-4 text-sm font-semibold text-paper"
-            onClick={() => setDrawer(true)}
-          >
-            Feinschliff — Angaben nachziehen
-          </button>
-          <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={onEditQuestions}>
-            Fragen ändern
-          </button>
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <p className="text-xs uppercase tracking-wide text-muted">Empfohlene PV</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums leading-tight">
+            {result.recommendPv
+              ? `${formatDeNumber(result.pvKwp.low, 1)}–${formatDeNumber(result.pvKwp.high, 1)} kWp`
+              : "nicht erneut"}
+          </p>
         </div>
-        <label className="mt-3 flex min-h-10 items-start gap-2 text-sm">
-          <input
-            type="checkbox"
-            className="mt-1"
-            checked={remember}
-            onChange={(e) => onRemember(e.target.checked)}
-          />
-          <span>Angaben merken — nur in diesem Browser.</span>
-        </label>
-      </section>
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <p className="text-xs uppercase tracking-wide text-muted">Empfohlener Speicher</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums leading-tight">
+            {formatDeNumber(result.batteryKwh.low, 1)}–{formatDeNumber(result.batteryKwh.high, 1)} kWh
+          </p>
+        </div>
+      </div>
+      <p className="mt-2 text-sm text-muted">{result.spanNote}</p>
 
-      <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
+      <h2 className="serif mt-8 text-2xl text-forest">Kosten brutto (Spanne)</h2>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {(
           [
-            ["Wärmebedarf / Jahr", formatRangeKwh(result.heat.spaceHeatKwh.low, result.heat.spaceHeatKwh.high)],
-            ["Heizkosten / Jahr", formatRangeEUR(result.heat.costEurYear.low, result.heat.costEurYear.high)],
-            ["CO₂ / Jahr", `${formatDeNumber(result.heat.co2kgYear.low)}–${formatDeNumber(result.heat.co2kgYear.high)} kg`],
+            ["PV allein", result.costPvOnly, result.recommendPv],
+            ["PV + Speicher", result.costPvBattery, true],
+            ["+ Wallbox", result.costPvBatteryWallbox, true],
           ] as const
-        ).map(([k, v]) => (
+        ).map(([k, r, show]) => (
           <div key={k} className="rounded-2xl border border-line bg-card p-4">
             <p className="text-xs uppercase tracking-wide text-muted">{k}</p>
-            <p className="mt-1 text-2xl font-semibold tabular-nums leading-tight">{v}</p>
+            <p className="mt-1 text-xl font-semibold leading-tight">
+              {show && (r.high > 0 || k !== "PV allein") ? <Band r={r} /> : "—"}
+            </p>
           </div>
         ))}
       </div>
-      <p className="mt-2 text-sm text-muted">Spanne, weil vieles noch angenommen ist.</p>
+      <p className="mt-2 text-xs text-muted">{result.grantDisclaimer} EEG-Einspeisung Seed ~{formatDeNumber(result.feedInCt.low, 1)}–{formatDeNumber(result.feedInCt.high, 1)} ct/kWh.</p>
+
+      <h2 className="serif mt-8 text-2xl text-forest">Eigenverbrauch &amp; Autarkie</h2>
+      <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <dt className="text-xs uppercase tracking-wide text-muted">Eigenverbrauch ohne Speicher</dt>
+          <dd className="mt-1 text-xl font-semibold">
+            <PctBand low={result.selfConsumptionNoBattery.low} high={result.selfConsumptionNoBattery.high} />
+          </dd>
+        </div>
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <dt className="text-xs uppercase tracking-wide text-muted">Eigenverbrauch mit Speicher</dt>
+          <dd className="mt-1 text-xl font-semibold">
+            <PctBand low={result.selfConsumptionWithBattery.low} high={result.selfConsumptionWithBattery.high} />
+          </dd>
+        </div>
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <dt className="text-xs uppercase tracking-wide text-muted">Autarkie ohne Speicher</dt>
+          <dd className="mt-1 text-xl font-semibold">
+            <PctBand low={result.autarkyNoBattery.low} high={result.autarkyNoBattery.high} />
+          </dd>
+        </div>
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <dt className="text-xs uppercase tracking-wide text-muted">Autarkie mit Speicher</dt>
+          <dd className="mt-1 text-xl font-semibold">
+            <PctBand low={result.autarkyWithBattery.low} high={result.autarkyWithBattery.high} />
+          </dd>
+        </div>
+      </dl>
+
+      <h2 className="serif mt-8 text-2xl text-forest">Stromkosten &amp; Erlöse / Jahr</h2>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <p className="text-xs uppercase tracking-wide text-muted">Jetzt</p>
+          <p className="mt-1 text-xl font-semibold">
+            <Band r={result.electricityCostNow} />
+          </p>
+        </div>
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <p className="text-xs uppercase tracking-wide text-muted">Mit Anlage (Netzbezug)</p>
+          <p className="mt-1 text-xl font-semibold">
+            <Band r={result.electricityCostWithSystem} />
+          </p>
+        </div>
+        <div className="rounded-2xl border border-line bg-card p-4">
+          <p className="text-xs uppercase tracking-wide text-muted">Einspeiseerlös grob</p>
+          <p className="mt-1 text-xl font-semibold">
+            <Band r={result.feedInRevenue} />
+          </p>
+        </div>
+      </div>
+      <div className="mt-3 rounded-2xl border border-line bg-card p-4">
+        <p className="text-xs uppercase tracking-wide text-muted">CO₂ grob vermieden / Jahr</p>
+        <p className="mt-1 text-xl font-semibold tabular-nums">
+          {formatDeNumber(Math.round(result.co2kgYear.low / 10) * 10)}–
+          {formatDeNumber(Math.round(result.co2kgYear.high / 10) * 10)} kg
+        </p>
+      </div>
+
+      <div className="no-print mt-6 flex flex-wrap gap-2">
+        <button
+          type="button"
+          className="min-h-11 rounded-full bg-forest px-4 text-sm font-semibold text-paper"
+          onClick={() => setDrawer(true)}
+        >
+          Feinschliff — Angaben nachziehen
+        </button>
+        <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={onEditQuestions}>
+          Fragen ändern
+        </button>
+        <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={() => window.print()}>
+          Drucken / PDF
+        </button>
+        <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={onReset}>
+          Entwurf löschen
+        </button>
+      </div>
+
+      <label className="mt-4 flex min-h-10 items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          className="mt-1"
+          checked={remember}
+          onChange={(e) => onRemember(e.target.checked)}
+        />
+        <span>Angaben merken — nur in diesem Browser.</span>
+      </label>
 
       <Accordion title="Was Sie angegeben haben — und was angenommen ist">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -235,43 +228,6 @@ export function ResultView({
         </div>
       </Accordion>
 
-      <div className="no-print mt-6 flex flex-wrap gap-2">
-        <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={() => window.print()}>
-          Drucken / PDF
-        </button>
-        <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={onReset}>
-          Entwurf löschen
-        </button>
-      </div>
-
-      <h2 className="serif mt-10 text-2xl text-forest">Maßnahmen</h2>
-      <p className="mt-1 text-sm text-muted">Spannen, keine Punktwerte. {result.grantDisclaimer}</p>
-      <div className="mt-4 flex flex-col gap-4">
-        {result.measures.map((m) => (
-          <MeasureCard key={m.id} m={m} disclaimer={result.grantDisclaimer} />
-        ))}
-      </div>
-
-      <h2 className="serif mt-12 text-2xl text-forest">Drei Pakete im Vergleich</h2>
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
-        {result.packages.map((p) => (
-          <article key={p.id} className="rounded-2xl border border-line bg-card p-4">
-            <h3 className="serif text-xl text-forest">{p.title}</h3>
-            <p className="text-sm text-muted">{p.subtitle}</p>
-            <p className="mt-3 text-2xl font-semibold tabular-nums leading-tight">
-              <Band r={p.net} />
-            </p>
-            <p className="text-xs text-muted">netto nach grobem Zuschuss</p>
-            <ul className="mt-3 space-y-1 text-sm">
-              <li>Kosten <Band r={p.cost} /></li>
-              <li>Zuschuss <Band r={p.grant} /></li>
-              <li>Ersparnis/Jahr <Band r={p.savingEurYear} /></li>
-            </ul>
-            <p className="mt-2 text-xs text-muted">{result.grantDisclaimer}</p>
-          </article>
-        ))}
-      </div>
-
       <h2 className="serif mt-12 text-2xl text-forest">Nächste Schritte</h2>
       <ol className="mt-3 list-decimal space-y-3 pl-5">
         {result.nextSteps.map((s) => (
@@ -281,12 +237,6 @@ export function ResultView({
           </li>
         ))}
       </ol>
-
-      <Accordion title="Mehr Angaben (optional)">
-        <Deepen draft={draft} onChange={onChange} />
-      </Accordion>
-
-      <p className="mt-8 text-xs text-muted">{result.wertschoepfungNote}</p>
 
       {drawer ? (
         <div className="no-print fixed inset-0 z-40 flex items-end justify-center sm:items-center">
@@ -311,7 +261,7 @@ export function ResultView({
                 Schließen
               </button>
             </div>
-            <FineTune draft={draft} onChange={onChange} />
+            <FineTune draft={draft} result={result} onChange={onChange} />
           </div>
         </div>
       ) : null}
@@ -319,96 +269,24 @@ export function ResultView({
   );
 }
 
-function Deepen({ draft, onChange }: { draft: Draft; onChange: (p: Partial<Draft>) => void }) {
-  return (
-    <div className="grid gap-4">
-      <Field label="Wohnfläche (m²)">
-        <input
-          className={inputClass}
-          inputMode="decimal"
-          defaultValue={draft.livingAreaM2 ?? ""}
-          onBlur={(e) => onChange({ livingAreaM2: parseDeNumber(e.target.value) })}
-        />
-      </Field>
-      <Field label="Personen im Haushalt">
-        <input
-          className={inputClass}
-          inputMode="numeric"
-          defaultValue={draft.persons ?? ""}
-          onBlur={(e) => onChange({ persons: parseDeNumber(e.target.value) })}
-        />
-      </Field>
-      <Field label="Heizkosten €/Jahr" hint="Oder unten kWh — nicht beides nötig.">
-        <input
-          className={inputClass}
-          inputMode="decimal"
-          defaultValue={draft.heatingCostEurYear ?? ""}
-          onBlur={(e) => onChange({ heatingCostEurYear: parseDeNumber(e.target.value) })}
-        />
-      </Field>
-      <Field label="Heizverbrauch kWh/Jahr">
-        <input
-          className={inputClass}
-          inputMode="decimal"
-          defaultValue={draft.heatingKwhYear ?? ""}
-          onBlur={(e) => onChange({ heatingKwhYear: parseDeNumber(e.target.value) })}
-        />
-      </Field>
-      <ChipGroup
-        legend="Warmwasser elektrisch?"
-        value={draft.dhwElectric === "unknown" ? "unknown" : draft.dhwElectric ? "yes" : "no"}
-        onChange={(v) =>
-          onChange({ dhwElectric: v === "unknown" ? "unknown" : v === "yes" })
-        }
-        options={[
-          { value: "yes", label: "Ja" },
-          { value: "no", label: "Nein" },
-          { value: "unknown", label: "Weiß ich nicht" },
-        ]}
-      />
-      <ChipGroup
-        legend="Photovoltaik vorhanden?"
-        value={draft.hasPv === "unknown" ? "unknown" : draft.hasPv ? "yes" : "no"}
-        onChange={(v) => onChange({ hasPv: v === "unknown" ? "unknown" : v === "yes" })}
-        options={[
-          { value: "yes", label: "Ja" },
-          { value: "no", label: "Nein" },
-          { value: "unknown", label: "Weiß ich nicht" },
-        ]}
-      />
-    </div>
-  );
-}
-
-function FineTune({ draft, onChange }: { draft: Draft; onChange: (p: Partial<Draft>) => void }) {
-  const ctHeat = draft.priceHeating != null ? Math.round(draft.priceHeating * 100) : 12;
+function FineTune({
+  draft,
+  result,
+  onChange,
+}: {
+  draft: Draft;
+  result: Evaluation;
+  onChange: (p: Partial<Draft>) => void;
+}) {
   const ctStrom = draft.priceElectricity != null ? Math.round(draft.priceElectricity * 100) : 32;
   const band = Math.round((draft.costFactor - 1) * 100);
+  const pv = draft.pvKwpOverride ?? result.pvKwp.mid;
+  const bat = draft.batteryKwhOverride ?? result.batteryKwh.mid;
+  const km = draft.evKmYear ?? (result.loads.evActive ? Math.round(result.loads.evKwh / 0.18) : 12000);
+  const wp = draft.heatPumpKwhYear ?? (result.loads.wpActive ? result.loads.wpKwh : 4000);
 
   return (
     <div className="mt-4 flex flex-col gap-5">
-      <Field label={COPY.ftArea} hint="m² Wohnfläche">
-        <input
-          className={inputClass}
-          inputMode="decimal"
-          defaultValue={draft.livingAreaM2 ?? ""}
-          onBlur={(e) => onChange({ livingAreaM2: parseDeNumber(e.target.value) })}
-        />
-      </Field>
-      <ChipGroup
-        legend={COPY.ftRoofFacade}
-        value={`${draft.roof}/${draft.facade}`}
-        onChange={(v) => {
-          const [roof, facade] = v.split("/") as [Draft["roof"], Draft["facade"]];
-          onChange({ roof, facade });
-        }}
-        options={[
-          { value: "original/original", label: "Dach/Fassade schwach" },
-          { value: "partial/partial", label: "Gemischt" },
-          { value: "renewed/renewed", label: "Dach/Fassade gut" },
-          { value: "unknown/unknown", label: "Weiß ich nicht" },
-        ]}
-      />
       <Field label={`${COPY.ftStrom}: ${ctStrom}`}>
         <input
           type="range"
@@ -418,13 +296,57 @@ function FineTune({ draft, onChange }: { draft: Draft; onChange: (p: Partial<Dra
           onChange={(e) => onChange({ priceElectricity: Number(e.target.value) / 100 })}
         />
       </Field>
-      <Field label={`${COPY.ftHeiz}: ${ctHeat} ct/kWh`}>
+      <Field label={`${COPY.ftPv}: ${formatDeNumber(pv, 1)}`}>
         <input
           type="range"
-          min={6}
-          max={24}
-          value={ctHeat}
-          onChange={(e) => onChange({ priceHeating: Number(e.target.value) / 100 })}
+          min={3}
+          max={18}
+          step={0.5}
+          value={pv}
+          onChange={(e) => onChange({ pvKwpOverride: Number(e.target.value) })}
+        />
+      </Field>
+      <Field label={`${COPY.ftBattery}: ${formatDeNumber(bat, 1)}`}>
+        <input
+          type="range"
+          min={3}
+          max={25}
+          step={0.5}
+          value={bat}
+          onChange={(e) => onChange({ batteryKwhOverride: Number(e.target.value) })}
+        />
+      </Field>
+      <Field label={`${COPY.ftEvKm}: ${formatDeNumber(km)}`}>
+        <input
+          type="range"
+          min={0}
+          max={30000}
+          step={500}
+          value={km}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            onChange({
+              evKmYear: v > 0 ? v : null,
+              evKwhYear: null,
+              hasEv: v > 0 ? draft.hasEv === "no" ? "yes" : draft.hasEv ?? "yes" : draft.hasEv,
+            });
+          }}
+        />
+      </Field>
+      <Field label={`${COPY.ftWpKwh}: ${formatDeNumber(wp)}`}>
+        <input
+          type="range"
+          min={0}
+          max={12000}
+          step={250}
+          value={wp}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            onChange({
+              heatPumpKwhYear: v > 0 ? v : null,
+              hasHeatPump: v > 0 ? "yes" : draft.hasHeatPump === "yes" ? "no" : draft.hasHeatPump,
+            });
+          }}
         />
       </Field>
       <Field label={`${COPY.ftCost}: ${band > 0 ? "+" : ""}${band} %`}>
@@ -437,59 +359,14 @@ function FineTune({ draft, onChange }: { draft: Draft; onChange: (p: Partial<Dra
           onChange={(e) => onChange({ costFactor: 1 + Number(e.target.value) / 100 })}
         />
       </Field>
-      <ChipGroup
-        legend={COPY.ftKlima}
-        value={draft.climateBonus === "auto" ? "auto" : draft.climateBonus ? "on" : "off"}
-        onChange={(v) =>
-          onChange({ climateBonus: v === "auto" ? "auto" : v === "on" })
-        }
-        options={[
-          { value: "auto", label: "Automatisch" },
-          { value: "on", label: "Ansetzen" },
-          { value: "off", label: "Nicht ansetzen" },
-        ]}
-      />
-      <label className="flex min-h-10 items-start gap-2 text-sm">
+      <Field label="Haushaltsstrom kWh/Jahr">
         <input
-          type="checkbox"
-          className="mt-1"
-          checked={draft.hasMinorChild}
-          onChange={(e) => onChange({ hasMinorChild: e.target.checked })}
+          className={inputClass}
+          inputMode="decimal"
+          defaultValue={draft.householdKwhYear ?? result.loads.householdKwh}
+          onBlur={(e) => onChange({ householdKwhYear: parseDeNumber(e.target.value), householdCostEurYear: null })}
         />
-        <span>Mindestens ein Kind mit Kindergeld im Haushalt (nur für den Einkommensbonus).</span>
-      </label>
-      <ChipGroup
-        legend={COPY.ftIncome}
-        value={draft.incomeBand}
-        onChange={(incomeBand) => onChange({ incomeBand })}
-        options={[
-          { value: "upto30k", label: "bis 30.000 €" },
-          { value: "upto40k", label: "bis 40.000 €" },
-          { value: "upto50k", label: "bis 50.000 €" },
-          { value: "above", label: "darüber" },
-          { value: "preferNot", label: "Lieber nicht angeben" },
-        ]}
-      />
-      <fieldset>
-        <legend className="text-sm font-medium">{COPY.ftDone}</legend>
-        <div className="mt-2 flex flex-col gap-2">
-          {DONE_OPTIONS.map((id) => (
-            <label key={id} className="flex min-h-10 items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={draft.alreadyDone.includes(id)}
-                onChange={(e) => {
-                  const set = new Set(draft.alreadyDone);
-                  if (e.target.checked) set.add(id);
-                  else set.delete(id);
-                  onChange({ alreadyDone: [...set] });
-                }}
-              />
-              {MEASURE_TITLE[id]}
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      </Field>
     </div>
   );
 }

@@ -110,6 +110,33 @@
       "source": "seed-energiefluss",
       "asOf": "2026-09-12",
       "notes": "Hydraulischer Abgleich; Umfang abhängig von Heizkreisanzahl."
+    },
+    "pvPerKwp": {
+      "value": 1500,
+      "low": 1200,
+      "high": 1800,
+      "unit": "EUR_per_kWp",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "PV installiert brutto inkl. Wechselrichter/Montage; Finanztip-ish 2026."
+    },
+    "batteryPerKwh": {
+      "value": 550,
+      "low": 400,
+      "high": 700,
+      "unit": "EUR_per_kWh",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Heimspeicher brutto inkl. Einbindung; €/kWh nutzbar grob."
+    },
+    "wallbox": {
+      "value": 1400,
+      "low": 800,
+      "high": 2000,
+      "unit": "EUR",
+      "source": "seed-energiefluss",
+      "asOf": "2026-09-12",
+      "notes": "Wallbox inkl. Montage, ohne großen Zählerumbau."
     }
   }
 }

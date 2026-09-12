@@ -14,8 +14,8 @@
   --color-bald: #2d4a63;
   --color-spaeter: #6a5e4c;
   --color-warn: #7a3e1d;
-  --font-sans: var(--font-sans);
-  --font-serif: var(--font-serif);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: Georgia, "Times New Roman", ui-serif, serif;
 }
 
 html {

@@ -1,104 +1,119 @@
 import { describe, expect, it } from "vitest";
 import { lookupClimate } from "./climate";
 import { evaluate, fixtures } from "./evaluate";
-import { estimateHeat } from "./heat";
 import { COPY, houseSentence } from "./labels";
 import { emptyDraft } from "./types";
 
-describe("1974 EFH gas 140m² 80331", () => {
-  const ev = evaluate(fixtures.efh1974gas);
+describe("household-only 3500 kWh 80331", () => {
+  const ev = evaluate(fixtures.householdOnly80331);
 
-  it("uses Munich climate", () => {
+  it("uses Munich climate yield", () => {
     const c = lookupClimate("80331");
     expect(c.prefix).toBe("80");
-    expect(c.factor).toBeCloseTo(1.06);
-    expect(ev.heat.climate.factor).toBeCloseTo(1.06);
+    expect(c.pvYieldKwhPerKwp).toBe(1050);
+    expect(ev.climate.pvYieldKwhPerKwp).toBe(1050);
   });
 
-  it("estimates a wide 70s demand band, not a fake point", () => {
-    const h = estimateHeat(fixtures.efh1974gas);
-    expect(h.specificKwhM2.mid).toBeGreaterThan(140);
-    expect(h.specificKwhM2.high).toBeGreaterThan(h.specificKwhM2.low + 40);
-    expect(h.spaceHeatKwh.mid).toBeGreaterThan(20000);
+  it("sizes PV for household load only", () => {
+    expect(ev.loads.totalKwh).toBe(3500);
+    expect(ev.loads.evKwh).toBe(0);
+    expect(ev.loads.wpKwh).toBe(0);
+    expect(ev.recommendPv).toBe(true);
+    // 3500/1050*1.05 ≈ 3.5 → clamped to 4
+    expect(ev.pvKwp.mid).toBeGreaterThanOrEqual(4);
+    expect(ev.pvKwp.mid).toBeLessThanOrEqual(15);
+    expect(ev.pvKwp.high).toBeGreaterThan(ev.pvKwp.low);
   });
 
-  it("puts cheap fabric + balancing now, WP later when insulation unknown", () => {
-    expect(ev.path.jetzt).toContain("hydraulicBalancing");
-    expect(ev.path.jetzt).toContain("topFloorCeiling");
-    expect(ev.wpReadiness.recommend).toBe("spaeter");
-    expect(ev.path.spaeter).toContain("heatPumpAirWater");
-    expect(ev.path.jetzt).not.toContain("heatPumpAirWater");
-  });
-
-  it("uses locked house sentence", () => {
+  it("house sentence ohne E-Auto", () => {
     expect(ev.houseSentence).toBe(
-      "Einfamilienhaus aus den 1970ern mit Gas in 80xxx — erster Blick, noch grob.",
+      "Für Ihren Haushalt in 80xxx ohne E-Auto — erster Blick auf Solarstrom und Speicher, noch grob.",
     );
-    expect(ev.pathSentence.startsWith("Am sinnvollsten jetzt:")).toBe(true);
-    expect(ev.gmodgNote).toBe(COPY.gmodg);
     expect(ev.grantDisclaimer).toBe(COPY.grantDisclaimer);
   });
+});
 
-  it("never applies GModG 65% to grants", () => {
-    const wp = ev.measures.find((m) => m.id === "heatPumpAirWater");
-    expect(wp).toBeTruthy();
-    const implied = wp!.grant.mid / Math.max(wp!.cost.mid, 1);
-    expect(implied).toBeLessThan(0.65);
-    expect(ev.wertschoepfungNote.toLowerCase()).toMatch(/nicht/);
+describe("household + EV 15000 km", () => {
+  it("adds EV load and bumps battery", () => {
+    const ev = evaluate(fixtures.householdEv15000km);
+    expect(ev.loads.evActive).toBe(true);
+    expect(ev.loads.evKwh).toBe(2700); // 15000 * 0.18
+    expect(ev.loads.totalKwh).toBe(3500 + 2700);
+    expect(ev.houseSentence).toMatch(/mit E-Auto/);
+    const noEv = evaluate(fixtures.householdOnly80331);
+    expect(ev.batteryKwh.mid).toBeGreaterThan(noEv.batteryKwh.mid);
+    expect(ev.pvKwp.mid).toBeGreaterThan(noEv.pvKwp.mid);
   });
 });
 
-describe("1998 DHH oil", () => {
-  it("treats mixed fabric as WP-bald, not jetzt", () => {
-    const ev = evaluate(fixtures.dhh1998oil);
-    expect(ev.path.jetzt).toContain("hydraulicBalancing");
-    expect(ev.wpReadiness.recommend).toBe("bald");
-    expect(ev.path.bald).toContain("heatPumpAirWater");
-    expect(ev.houseSentence).toMatch(/Doppelhaushälfte aus den 1990ern mit Öl/);
+describe("household + WP 4000 kWh", () => {
+  it("treats Wärmepumpe as load only", () => {
+    const ev = evaluate(fixtures.householdWp4000);
+    expect(ev.loads.wpActive).toBe(true);
+    expect(ev.loads.wpKwh).toBe(4000);
+    expect(ev.loads.totalKwh).toBe(7500);
+    expect(ev.houseSentence).toMatch(/Wärmepumpe als Stromlast/);
+    // Must not recommend installing a heat pump
+    expect(JSON.stringify(ev.path)).not.toMatch(/Wärmepumpe einbauen|WP install/i);
+    expect(ev.recommendSentence).toMatch(/kWp/);
   });
 });
 
-describe("2012 EFH WP+PV", () => {
-  it("does not sell a new pump or PV", () => {
-    const ev = evaluate(fixtures.efh2012wpPv);
-    const wp = ev.measures.find((m) => m.id === "heatPumpAirWater");
-    const pv = ev.measures.find((m) => m.id === "pvWithStorage");
-    expect(wp?.applicable).toBe(false);
-    expect(pv?.applicable).toBe(false);
-    expect(ev.path.jetzt).not.toContain("heatPumpAirWater");
-    expect(ev.houseSentence).toMatch(/Wärmepumpe/);
+describe("already has PV", () => {
+  it("does not recommend a second full PV", () => {
+    const ev = evaluate(fixtures.alreadyHasPv);
+    expect(ev.recommendPv).toBe(false);
+    expect(ev.costPvOnly.mid).toBe(0);
+    expect(ev.recommendSentence).toMatch(/Bestehende PV|kein zweites/i);
+    expect(ev.batteryKwh.mid).toBeGreaterThan(0);
   });
 });
 
-describe("copy and softness", () => {
-  it("allows empty PLZ and Weiß ich nicht", () => {
+describe("defaults and softness", () => {
+  it("assumes 3500 kWh when empty", () => {
     const ev = evaluate({
       ...emptyDraft(),
-      buildingType: "unknown",
-      decade: "unknown",
-      heating: "unknown",
-      plz: "",
+      hasEv: "no",
+      hasHeatPump: "no",
+      hasPv: "none",
     });
-    expect(ev.houseSentence).toMatch(/ohne PLZ/);
-    expect(ev.warnings.some((w) => w === COPY.plzEmpty)).toBe(true);
-    expect(ev.measures.some((m) => m.applicable)).toBe(true);
+    expect(ev.loads.householdAssumed).toBe(true);
+    expect(ev.loads.householdKwh).toBe(3500);
   });
 
-  it("insulation weak vs good flips WP horizon on same 1974 house", () => {
-    const weak = evaluate({ ...fixtures.efh1974gas, insulation: "weak" });
-    const good = evaluate({ ...fixtures.efh1974gas, insulation: "good" });
-    expect(weak.wpReadiness.recommend).toBe("spaeter");
-    expect(good.wpReadiness.recommend).toBe("bald");
+  it("assumes 2160 kWh EV when Ja without numbers", () => {
+    const ev = evaluate({
+      ...emptyDraft(),
+      householdKwhYear: 3500,
+      hasEv: "yes",
+      hasHeatPump: "no",
+    });
+    expect(ev.loads.evAssumed).toBe(true);
+    expect(ev.loads.evKwh).toBe(2160);
+  });
+
+  it("assumes 4000 kWh WP when Ja without numbers", () => {
+    const ev = evaluate({
+      ...emptyDraft(),
+      householdKwhYear: 3500,
+      hasEv: "no",
+      hasHeatPump: "yes",
+    });
+    expect(ev.loads.wpAssumed).toBe(true);
+    expect(ev.loads.wpKwh).toBe(4000);
   });
 
   it("houseSentence helper matches lock", () => {
     expect(
-      houseSentence({
-        buildingType: "EFH",
-        decade: "1970-89",
-        heating: "gas",
-        plz: "80331",
-      }),
-    ).toBe("Einfamilienhaus aus den 1970ern mit Gas in 80xxx — erster Blick, noch grob.");
+      houseSentence({ plz: "80331", evActive: true, wpActive: true }),
+    ).toBe(
+      "Für Ihren Haushalt in 80xxx mit E-Auto und Wärmepumpe als Stromlast — erster Blick auf Solarstrom und Speicher, noch grob.",
+    );
+  });
+
+  it("feed-in comes from EEG seed as ct range", () => {
+    const ev = evaluate(fixtures.householdOnly80331);
+    expect(ev.feedInCt.low).toBeGreaterThanOrEqual(7);
+    expect(ev.feedInCt.high).toBeLessThanOrEqual(9);
   });
 });

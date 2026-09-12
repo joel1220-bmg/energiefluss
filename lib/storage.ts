@@ -1,8 +1,8 @@
 import { emptyDraft, type Draft } from "@/lib/engine/types";
 import { draftSchema } from "@/lib/schema";
 
-export const STORAGE_KEY = "energiefluss-draft-v1";
-export const REMEMBER_KEY = "energiefluss-remember-v1";
+export const STORAGE_KEY = "energiefluss-draft-v2";
+export const REMEMBER_KEY = "energiefluss-remember-v2";
 
 export function loadRemember(): boolean {
   if (typeof window === "undefined") return false;

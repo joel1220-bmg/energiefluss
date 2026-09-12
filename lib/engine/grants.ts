@@ -1,5 +1,5 @@
 import fundingJson from "@/data/funding.beg-2026-07.json";
-import type { IncomeBand } from "./types";
+export type IncomeBand = "upto30k" | "upto40k" | "upto50k" | "above" | "preferNot";
 
 /** KfW 458 + BAFA envelope + EBW. GModG 65% is intentionally absent. Wertschöpfung inactive. */
 

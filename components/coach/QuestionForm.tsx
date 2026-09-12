@@ -1,28 +1,13 @@
 "use client";
 
-import type { BuildingType, Decade, Draft, Heating } from "@/lib/engine/types";
-import { BUILDING_CHIP, COPY, DECADE_CHIP, HEATING_CHIP } from "@/lib/engine/labels";
-import { ChipGroup, inputClass } from "./ui";
+import type { Draft, EvState, HasPvState, TriState } from "@/lib/engine/types";
+import { COPY, EV_CHIP, HAS_PV_CHIP, TRI_CHIP } from "@/lib/engine/labels";
+import { parseDeNumber } from "@/lib/engine/parse";
+import { ChipGroup, Field, inputClass } from "./ui";
 
-const TYPES: BuildingType[] = ["EFH", "DHH", "RH", "MFH", "unknown"];
-const DECADES: Decade[] = [
-  "pre1950",
-  "1950-69",
-  "1970-89",
-  "1990-2001",
-  "2002-15",
-  "from2016",
-  "unknown",
-];
-const HEATS: Heating[] = [
-  "gas",
-  "oil",
-  "heatpump",
-  "district",
-  "nightstorage",
-  "other",
-  "unknown",
-];
+const EVS: EvState[] = ["yes", "planned", "no", "unknown"];
+const TRIS: TriState[] = ["yes", "no", "unknown"];
+const PVS: HasPvState[] = ["none", "yes", "unknown"];
 
 export function QuestionForm({
   draft,
@@ -37,9 +22,12 @@ export function QuestionForm({
   remember: boolean;
   onRemember: (on: boolean) => void;
 }) {
+  const showEvDetail = draft.hasEv === "yes" || draft.hasEv === "planned" || draft.hasEv === "unknown";
+  const ready = draft.hasEv !== null && draft.hasHeatPump !== null;
   const unknownUsed =
-    draft.buildingType === "unknown" || draft.decade === "unknown" || draft.heating === "unknown";
-  const ready = draft.buildingType !== null && draft.decade !== null && draft.heating !== null;
+    draft.hasEv === "unknown" ||
+    draft.hasHeatPump === "unknown" ||
+    (!draft.householdKwhYear && !draft.householdCostEurYear);
 
   return (
     <form
@@ -50,7 +38,7 @@ export function QuestionForm({
       }}
     >
       <div>
-        <h1 className="serif text-3xl text-forest">Vier Angaben, dann die erste Spanne</h1>
+        <h1 className="serif text-3xl text-forest">Erste Einschätzung — Solar, Speicher, E-Auto</h1>
         <p className="mt-2 text-muted">{COPY.privacy}</p>
       </div>
 
@@ -72,34 +60,123 @@ export function QuestionForm({
           aria-describedby="plz-help"
         />
         <p id="plz-help" className="mt-2 text-sm text-muted">
-          {draft.plz.length === 0 ? COPY.plzEmpty : draft.plz.length < 5 ? "Fünf Ziffern, sobald Sie sie kennen." : " "}
+          {draft.plz.length === 0 ? COPY.plzHint : draft.plz.length < 5 ? "Fünf Ziffern, sobald Sie sie kennen." : " "}
         </p>
       </div>
 
-      <ChipGroup
-        legend={COPY.qType}
-        value={draft.buildingType}
-        onChange={(buildingType) => onChange({ buildingType })}
-        options={TYPES.map((value) => ({ value, label: BUILDING_CHIP[value] }))}
-        help={draft.buildingType === "unknown" ? COPY.unknownHelp : undefined}
-      />
+      <fieldset>
+        <legend className="serif text-lg text-forest">{COPY.qHousehold}</legend>
+        <p className="mt-1 text-sm text-muted">{COPY.qHouseholdHint}</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Field label="kWh / Jahr">
+            <input
+              className={inputClass}
+              inputMode="decimal"
+              value={draft.householdKwhYear ?? ""}
+              onChange={(e) => {
+                const n = parseDeNumber(e.target.value);
+                onChange({ householdKwhYear: n, householdCostEurYear: n ? null : draft.householdCostEurYear });
+              }}
+              placeholder="z. B. 3500"
+            />
+          </Field>
+          <Field label="€ / Jahr" hint="Eines reicht.">
+            <input
+              className={inputClass}
+              inputMode="decimal"
+              value={draft.householdCostEurYear ?? ""}
+              onChange={(e) => {
+                const n = parseDeNumber(e.target.value);
+                onChange({ householdCostEurYear: n, householdKwhYear: n ? null : draft.householdKwhYear });
+              }}
+              placeholder="z. B. 1200"
+            />
+          </Field>
+        </div>
+        {!draft.householdKwhYear && !draft.householdCostEurYear ? (
+          <p className="mt-2 text-sm text-muted">{COPY.qHouseholdEmpty}</p>
+        ) : null}
+      </fieldset>
 
       <ChipGroup
-        legend={COPY.qDecade}
-        value={draft.decade}
-        onChange={(decade) => onChange({ decade })}
-        options={DECADES.map((value) => ({ value, label: DECADE_CHIP[value] }))}
-        help={draft.decade === "unknown" ? COPY.unknownHelp : undefined}
-      />
-
-      <ChipGroup
-        legend={COPY.qHeating}
-        value={draft.heating}
-        onChange={(heating) => onChange({ heating })}
-        options={HEATS.map((value) => ({ value, label: HEATING_CHIP[value] }))}
-        help={
-          draft.heating === "unknown" || draft.heating === "other" ? COPY.unknownHelp : undefined
+        legend={COPY.qEv}
+        value={draft.hasEv}
+        onChange={(hasEv) =>
+          onChange({
+            hasEv,
+            ...(hasEv === "no" ? { evKmYear: null, evKwhYear: null } : {}),
+          })
         }
+        options={EVS.map((value) => ({ value, label: EV_CHIP[value] }))}
+        help={draft.hasEv === "unknown" ? COPY.unknownHelp : undefined}
+      />
+
+      {showEvDetail ? (
+        <fieldset>
+          <legend className="serif text-lg text-forest">{COPY.qEvKm}</legend>
+          <p className="mt-1 text-sm text-muted">{COPY.qEvKmHint}</p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <Field label="km / Jahr">
+              <input
+                className={inputClass}
+                inputMode="decimal"
+                value={draft.evKmYear ?? ""}
+                onChange={(e) => {
+                  const n = parseDeNumber(e.target.value);
+                  onChange({ evKmYear: n, evKwhYear: n ? null : draft.evKwhYear });
+                }}
+                placeholder="z. B. 12000"
+              />
+            </Field>
+            <Field label="kWh / Jahr" hint="Eines reicht.">
+              <input
+                className={inputClass}
+                inputMode="decimal"
+                value={draft.evKwhYear ?? ""}
+                onChange={(e) => {
+                  const n = parseDeNumber(e.target.value);
+                  onChange({ evKwhYear: n, evKmYear: n ? null : draft.evKmYear });
+                }}
+                placeholder="z. B. 2160"
+              />
+            </Field>
+          </div>
+          {!draft.evKmYear && !draft.evKwhYear && (draft.hasEv === "yes" || draft.hasEv === "planned") ? (
+            <p className="mt-2 text-sm text-muted">{COPY.unknownHelp}</p>
+          ) : null}
+        </fieldset>
+      ) : null}
+
+      <ChipGroup
+        legend={COPY.qWp}
+        value={draft.hasHeatPump}
+        onChange={(hasHeatPump) =>
+          onChange({
+            hasHeatPump,
+            ...(hasHeatPump !== "yes" ? { heatPumpKwhYear: null } : {}),
+          })
+        }
+        options={TRIS.map((value) => ({ value, label: TRI_CHIP[value] }))}
+        help={COPY.qWpHelp}
+      />
+
+      {draft.hasHeatPump === "yes" ? (
+        <Field label="Wärmepumpe Strom kWh/Jahr (optional)" hint={COPY.unknownHelp}>
+          <input
+            className={inputClass}
+            inputMode="decimal"
+            value={draft.heatPumpKwhYear ?? ""}
+            onChange={(e) => onChange({ heatPumpKwhYear: parseDeNumber(e.target.value) })}
+            placeholder="z. B. 4000"
+          />
+        </Field>
+      ) : null}
+
+      <ChipGroup
+        legend={COPY.qPv}
+        value={draft.hasPv}
+        onChange={(hasPv) => onChange({ hasPv })}
+        options={PVS.map((value) => ({ value, label: HAS_PV_CHIP[value] }))}
       />
 
       {unknownUsed ? <p className="text-sm text-muted">{COPY.unknownHelp}</p> : null}

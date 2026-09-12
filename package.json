@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NEXT_TELEMETRY_DISABLED=1 next dev",
-    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
-    "start": "NEXT_TELEMETRY_DISABLED=1 next start",
-    "lint": "NEXT_TELEMETRY_DISABLED=1 eslint",
-    "test": "NEXT_TELEMETRY_DISABLED=1 vitest run",
-    "test:watch": "NEXT_TELEMETRY_DISABLED=1 vitest"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "next": "16.3.5",

@@ -1,164 +1,107 @@
-import type { BuildingType, Decade, Heating, Insulation, MeasureId } from "./types";
+import type { EvState, HasPvState, TriState } from "./types";
 
 /** Locked product copy. Do not paraphrase in the UI. */
 export const COPY = {
   landingLead:
-    "In wenigen Minuten eine erste Einschätzung für Ihr Haus — mit sichtbaren Annahmen. Danach können Sie alles genauer machen.",
+    "Erste Einschätzung für Solarstrom, Speicher und E-Auto an Ihrem Haus — mit sichtbaren Annahmen. Danach können Sie alles genauer machen.",
   cta: "Einschätzung starten",
   privacy: "Ihre Angaben bleiben in diesem Browser.",
-  underCta: "Keine zertifizierte Beratung, kein iSFP — dafür sofort Orientierung.",
+  underCta:
+    "Keine zertifizierte Beratung — Orientierung zu Größe, Speicher und groben Kosten-/Eigenverbrauchsspannen.",
+  landingTileFour: "Vier Angaben",
+  landingTileFourBody: "Strombedarf, E-Auto, Wärmepumpe als Last, optional PLZ. Weiß ich nicht ist immer erlaubt.",
+  landingTileSize: "Größe",
+  landingTileSizeBody: "Empfohlene PV in kWp und Speicher in kWh — als Spanne, kein Punktwert.",
+  landingTileCost: "Kosten / Spanne",
+  landingTileCostBody: "Brutto-Kosten, Eigenverbrauch und Autarkie grob — Orientierung, kein Angebot.",
   qPlz: "In welcher Postleitzahl steht Ihr Haus?",
-  qType: "Welcher Gebäudetyp ist es?",
-  qDecade: "In welchem Jahrzehnt wurde es ungefähr gebaut?",
-  qHeating: "Womit heizen Sie heute?",
+  plzHint: "Ohne PLZ bleiben Ertrag und Standort grober.",
+  qHousehold: "Wie hoch ist Ihr Strombedarf im Haushalt?",
+  qHouseholdHint: "kWh/Jahr oder €/Jahr · Weiß ich nicht.",
+  qHouseholdEmpty: "Ohne Angabe rechnen wir mit einem typischen Haushalt und markieren das.",
+  qEv: "Haben Sie ein E-Auto — oder planen Sie eines?",
+  qEvKm: "Falls E-Auto: Wie viel fahren Sie ungefähr?",
+  qEvKmHint: "km/Jahr oder kWh/Jahr · Weiß ich nicht.",
+  qWp: "Heizen Sie mit einer Wärmepumpe?",
+  qWpHelp: "Nur als zusätzlicher Strombedarf — wir empfehlen hier keine Wärmepumpe.",
+  qPv: "Haben Sie schon eine Photovoltaik-Anlage?",
   unknownHelp: "Kein Problem — wir rechnen mit einer vorsichtigen Annahme und markieren sie.",
-  plzEmpty: "Ohne PLZ bleiben Förderung und regionale Preise grober.",
-  resultTail: "erster Blick, noch grob.",
-  grantDisclaimer: "Stand Antragstag, keine Zusage.",
-  gmodg:
-    "Eine Pflicht auf 65 % Erneuerbare beim Heizungstausch im Bestand gibt es seit Sommer 2026 nicht mehr.",
-  insulationQ: "Wie schätzen Sie die Dämmung ein?",
-  insulationHint: "Baujahr allein reicht nicht — Dämmung entscheidet, ob die Hülle oder eine Wärmepumpe zuerst kommt.",
+  resultTail: "erster Blick auf Solarstrom und Speicher, noch grob.",
+  recommendLead: "Empfohlen grob:",
+  recommendTail: "Kosten und Eigenverbrauch als Spanne — keine Punktwerte, keine Zusage.",
+  grantDisclaimer: "Orientierung, kein Angebot.",
+  spanNote: "Spanne, weil vieles noch angenommen ist.",
   ftStrom: "Strompreis (ct/kWh)",
-  ftHeiz: "Heizpreis",
+  ftPv: "PV-Leistung (kWp)",
+  ftBattery: "Speicher (kWh)",
+  ftEvKm: "E-Auto km/Jahr",
+  ftWpKwh: "Wärmepumpe kWh/Jahr",
   ftCost: "Kostenband (±30 %)",
-  ftKlima: "Klimabonus (Selbstnutzung, bis 31.01.2027)",
-  ftIncome: "Einkommen für Bonus (Band)",
-  ftDone: "Schon erledigt",
-  ftRoofFacade: "Dämmung Dach/Fassade",
-  ftArea: "Wohnfläche",
 } as const;
 
-export const BUILDING_LABEL: Record<BuildingType, string> = {
-  EFH: "Einfamilienhaus",
-  DHH: "Doppelhaushälfte",
-  RH: "Reihenhaus",
-  MFH: "kleines Mehrfamilienhaus",
-  unknown: "Wohnhaus",
-};
-
-export const BUILDING_CHIP: Record<BuildingType, string> = {
-  EFH: "Einfamilienhaus",
-  DHH: "Doppelhaushälfte",
-  RH: "Reihenhaus",
-  MFH: "kleines Mehrfamilienhaus",
+export const EV_CHIP: Record<EvState, string> = {
+  yes: "Ja, fährt schon",
+  planned: "Geplant",
+  no: "Nein",
   unknown: "Weiß ich nicht",
 };
 
-export const DECADE_CHIP: Record<Decade, string> = {
-  pre1950: "vor 1950",
-  "1950-69": "1950–69",
-  "1970-89": "1970–89",
-  "1990-2001": "1990–2001",
-  "2002-15": "2002–15",
-  from2016: "ab 2016",
+export const TRI_CHIP: Record<TriState, string> = {
+  yes: "Ja",
+  no: "Nein",
   unknown: "Weiß ich nicht",
 };
 
-export const HEATING_CHIP: Record<Heating, string> = {
-  gas: "Gas",
-  oil: "Öl",
-  heatpump: "Wärmepumpe",
-  district: "Fernwärme",
-  nightstorage: "Strom/Nachtspeicher",
-  other: "Sonstiges",
+export const HAS_PV_CHIP: Record<HasPvState, string> = {
+  none: "Keine",
+  yes: "Ja, grob",
   unknown: "Weiß ich nicht",
-};
-
-export const INSULATION_CHIP: Record<Insulation, string> = {
-  weak: "Schwach",
-  mixed: "Gemischt",
-  good: "Gut",
-  unknown: "Weiß ich nicht",
-};
-
-export const MEASURE_TITLE: Record<MeasureId, string> = {
-  hydraulicBalancing: "Hydraulischer Abgleich",
-  topFloorCeiling: "Dachboden-Decke dämmen",
-  basementCeiling: "Kellerdecke",
-  roofInsulation: "Dachdämmung",
-  wdvs: "Fassadendämmung",
-  windowTriple: "Fenster (3-fach)",
-  heatPumpAirWater: "Luft-Wasser-Wärmepumpe",
-  pvWithStorage: "Photovoltaik mit Speicher",
-  ventilationCentral: "Lüftung mit Wärmerückgewinnung",
-  energyAdvice: "Energieberatung / iSFP",
-};
-
-export const MEASURE_SHORT: Record<MeasureId, string> = {
-  energyAdvice: "Energieberatung",
-  hydraulicBalancing: "Heizungsabgleich",
-  topFloorCeiling: "Dachboden-Decke dämmen",
-  basementCeiling: "Kellerdecke dämmen",
-  roofInsulation: "Dach dämmen",
-  wdvs: "Fassade dämmen",
-  windowTriple: "Fenster erneuern",
-  heatPumpAirWater: "Wärmepumpe",
-  pvWithStorage: "Solarstrom",
-  ventilationCentral: "Lüftung",
 };
 
 export const HORIZON_COPY = {
   intro: "So könnten Sie vorgehen — grobe Reihenfolge, keine Pflicht.",
-  jetzt: { title: "Jetzt", sub: "Zuerst sinnvoll", empty: "Noch nichts Dringendes" },
-  bald: { title: "Bald", sub: "Danach angehen", empty: "—" },
-  spaeter: { title: "Später", sub: "Wenn Hülle und Hydraulik passen", empty: "—" },
+  jetzt: {
+    title: "Jetzt",
+    sub: "Angebot mit kWp/Speicher-Spanne einholen",
+    empty: "—",
+  },
+  bald: {
+    title: "Bald",
+    sub: "E-Auto-Laden / Wallbox mitdenken",
+    empty: "—",
+  },
+  spaeter: {
+    title: "Später",
+    sub: "Feinschliff mit Verbrauchsdaten vom Zähler",
+    empty: "—",
+  },
 } as const;
-
-export const MEASURE_TECHNICAL: Partial<Record<MeasureId, string>> = {
-  topFloorCeiling: "Fachlich: oberste Geschossdecke",
-  wdvs: "Fachlich: WDVS",
-};
-
-export function decadePhrase(decade: Decade | null): string {
-  switch (decade) {
-    case "pre1950":
-      return "von vor 1950";
-    case "1950-69":
-      return "aus den 1950ern";
-    case "1970-89":
-      return "aus den 1970ern";
-    case "1990-2001":
-      return "aus den 1990ern";
-    case "2002-15":
-      return "aus den 2000ern";
-    case "from2016":
-      return "ab 2016";
-    default:
-      return "unbekannten Baujahrs";
-  }
-}
 
 export function plzPrefixLabel(plz: string): string {
   const d = (plz || "").replace(/\D/g, "");
   if (d.length >= 2) return `${d.slice(0, 2)}xxx`;
-  return "ohne PLZ";
+  return "";
 }
 
 export function houseSentence(input: {
-  buildingType: BuildingType | null;
-  decade: Decade | null;
-  heating: Heating | null;
   plz: string;
+  evActive: boolean;
+  wpActive: boolean;
 }): string {
-  const typ = BUILDING_LABEL[input.buildingType ?? "unknown"];
-  const when = decadePhrase(input.decade);
-  const heat = HEATING_CHIP[input.heating ?? "unknown"];
-  const heatWord =
-    input.heating === "unknown" || input.heating === null
-      ? "unbekannter Heizung"
-      : input.heating === "other"
-        ? "sonstiger Heizung"
-        : heat;
   const loc = plzPrefixLabel(input.plz);
-  const mid =
-    input.decade === "pre1950" || input.decade === "from2016" || input.decade === "unknown" || !input.decade
-      ? `${typ} ${when} mit ${heatWord} in ${loc}`
-      : `${typ} ${when} mit ${heatWord} in ${loc}`;
-  return `${mid} — ${COPY.resultTail}`;
+  const where = loc ? ` in ${loc}` : "";
+  const ev = input.evActive ? " mit E-Auto" : " ohne E-Auto";
+  const wp = input.wpActive ? " und Wärmepumpe als Stromlast" : "";
+  return `Für Ihren Haushalt${where}${ev}${wp} — ${COPY.resultTail}`;
 }
 
-export function pathSentence(titles: { jetzt: string[]; bald: string[]; spaeter: string[] }): string {
-  const orDash = (xs: string[]) => (xs.length ? xs.join(", ") : "nichts Dringendes");
-  return `Am sinnvollsten jetzt: ${orDash(titles.jetzt)} / Bald: ${orDash(titles.bald)} / Später: ${orDash(titles.spaeter)}`;
+export function recommendSentence(pv: { low: number; high: number }, bat: { low: number; high: number }, recommendPv: boolean): string {
+  if (!recommendPv) {
+    return `Bestehende PV — kein zweites Vollsystem. Speicher grob ca. ${fmt1(bat.low)}–${fmt1(bat.high)}\u00a0kWh. ${COPY.recommendTail}`;
+  }
+  return `${COPY.recommendLead} ca. ${fmt1(pv.low)}–${fmt1(pv.high)}\u00a0kWp und ${fmt1(bat.low)}–${fmt1(bat.high)}\u00a0kWh Speicher. ${COPY.recommendTail}`;
+}
+
+function fmt1(n: number): string {
+  return new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 }).format(n);
 }

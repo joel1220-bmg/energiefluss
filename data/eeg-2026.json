@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "id": "eeg-2026",
+    "asOf": "2026-09-12",
+    "kind": "orientation_seed",
+    "locale": "de-DE",
+    "currency": "EUR",
+    "disclaimer": "Seed-Spanne für Teileinspeisung Kleinanlage. Gesetzlicher Satz am Inbetriebnahmetag maßgeblich — keine Zusage.",
+    "confidence": "low",
+    "notes": [
+      "Seed Stand 2026-09-12 — vor Go-Live gegen aktuelle EEG-Vergütungstabellen prüfen.",
+      "Teileinspeisung (Überschusseinspeisung), nicht Volleinspeisung."
+    ]
+  },
+  "teileinspeisung": {
+    "value": 0.078,
+    "low": 0.07,
+    "high": 0.082,
+    "unit": "EUR_per_kWh",
+    "label": "Teileinspeisung (Seed)",
+    "source": "seed-energiefluss",
+    "asOf": "2026-09-12",
+    "notes": "Grob ~7–8 ct/kWh — Seed, kein amtlicher Satz."
+  }
+}

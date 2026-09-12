@@ -1,22 +1,16 @@
 # Energiefluss Haus-Coach
 
-Orientierung für Bestandsgebäude in Deutschland. Ersetzt den ersten Termin beim Energieberater **nicht** — und ist **kein** zertifizierter iSFP.
+Erste Einschätzung für **Solarstrom, Speicher und E-Auto** an Ihrem Haus. Keine zertifizierte Beratung — Orientierung zu Größe, Speicher und groben Kosten-/Eigenverbrauchsspannen.
 
-Alle Zahlen entstehen im Browser (`lib/engine`). Kein Konto, keine Datenbank, kein Netzaufruf für die Rechnung.
+Alle Zahlen entstehen im Browser (`lib/engine`). Kein Konto, keine Datenbank, kein Netzaufruf für die Rechnung. Kein LLM.
 
 ## Starten
 
 ```bash
 npm install
 npm test
-npm run dev
-```
-
-Produktion:
-
-```bash
 npm run build
-npm start
+npm run dev
 ```
 
 Öffnen: [http://localhost:3000](http://localhost:3000)
@@ -25,54 +19,28 @@ npm start
 
 | Pfad | Inhalt |
 | --- | --- |
-| `/` | Start — vier Fragen versprochen, sichtbare Annahmen |
-| `/coach` | Eine Reise: vier Angaben → Ergebnis → Feinschliff |
+| `/` | Landing — Solar / Speicher / E-Auto |
+| `/coach` | Fragen → Ergebnis → Feinschliff |
 | `/datenschutz` | Platzhalter |
 | `/impressum` | Platzhalter |
 
-## Schätzung vs. offizieller Nachweis
+## Dimensionierung (kurz)
 
-| Diese App | Nicht diese App |
-| --- | --- |
-| Grobe Spannen, Regeln, Seed-JSON | Heizlast, iSFP, TPB, EEE |
-| KfW 458 / BAFA grob, Stand JSON | Antrag, Merkblatt, Kundenportal |
-| Keine 65-%-Pflicht in der Förderung | GModG nur als Hinweis |
+- Last = Haushalt + E-Auto + Wärmepumpe (nur als Stromlast)
+- Spezifischer Ertrag aus `climate.plz.json` (kWh/kWp), Default ~950
+- PV-kWp ≈ clamp(Last / Ertrag × 1,05, 4, 15), Spanne ±20 %
+- Speicher ≈ 0,8–1,2 kWh je kWp, +1–3 kWh bei E-Auto
+- Bestehende PV → kein zweites Vollsystem
+- EEG-Teileinspeisung Seed in `eeg-2026.json`
 
-GModG-Text (nur Tooltip/Hinweis, **nicht** in der Förderformel):
+## JSON
 
-> Eine Pflicht auf 65 % Erneuerbare beim Heizungstausch im Bestand gibt es seit Sommer 2026 nicht mehr.
-
-Zuschüsse immer als Spanne plus: „Stand Antragstag, keine Zusage.“
-
-## JSON aktualisieren
-
-Dateien in `data/`:
-
-- `funding.beg-2026-07.json` — KfW 458, BAFA Hülle, EBW (`meta.asOf`)
-- `costs.de.json` — Kostenbänder
-- `energy-prices.de.json` — grobe Arbeitspreise + CO₂
-- `climate.plz.json` — PLZ-Präfixe, Heizfaktor, PV-Ertrag
-
-Nach Änderung:
-
-```bash
-npm test
-npm run build
-```
-
-Keine Förderlogik in Komponenten schreiben. Nur `lib/engine`. Kein `eval`, kein LLM im Rechenkern.
-
-Wertschöpfungsbonus (EU-WP, geplant Q1 2027) bleibt inaktiv, bis das JSON ihn einschaltet.
-
-## Tests / Fixtures
-
-`npm test` (Vitest):
-
-- 1974 EFH Gas, 140 m², 80331 — Jetzt Abgleich + Decke, WP später
-- 1998 DHH Öl — WP bald, nicht jetzt
-- 2012 EFH WP+PV — keine neue WP, keine PV
-- KfW-Staffel, iSFP nur oberhalb 30.000 €, deutsche Zahlen (`1.200` und `1200`)
+- `data/climate.plz.json` — PLZ-Ertrag
+- `data/costs.de.json` — €/kWp, €/kWh Speicher, Wallbox
+- `data/energy-prices.de.json` — Strompreis ~32 ct, CO₂
+- `data/eeg-2026.json` — Einspeisung Seed
+- `data/funding.beg-2026-07.json` — ungenutzt in v1 (behalten)
 
 ## Technik
 
-Next.js App Router, TypeScript, Tailwind 4, Zod, Vitest. CSP ohne Tracker. 390 px primär.
+Next.js App Router, TypeScript, Tailwind 4, Zod, Vitest. CSP, System-Fonts, Sie-Form, remember-opt-in. Windows-taugliche npm-Scripts (kein `VAR=1 cmd`).

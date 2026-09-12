@@ -18,8 +18,8 @@ export default function ImpressumPage() {
         Kontakt: [E-Mail-Platzhalter — in dieser App wird keine E-Mail erhoben]
       </p>
       <p className="mt-8 text-sm text-muted">
-        Keine zertifizierte Energieberatung, kein iSFP, keine Förderzusage. Maßgeblich sind Merkblatt und
-        Portal am Antragstag.
+        Keine zertifizierte Beratung, kein Angebot, keine Förderzusage. Orientierung zu Solarstrom,
+        Speicher und E-Auto — maßgeblich sind Angebot und Technik vor Ort.
       </p>
     </article>
   );

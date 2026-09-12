@@ -23,7 +23,7 @@ export function SiteFooter() {
             </Link>
           </li>
         </ul>
-        <p className="mt-6 text-xs text-paper/45">Förderstand Orientierung 2026-09-12 · {COPY.grantDisclaimer}</p>
+        <p className="mt-6 text-xs text-paper/45">Stand Orientierung 2026-09-12 · {COPY.grantDisclaimer}</p>
       </div>
     </footer>
   );

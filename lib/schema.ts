@@ -1,52 +1,24 @@
 import { z } from "zod";
 
-const measureId = z.enum([
-  "hydraulicBalancing",
-  "topFloorCeiling",
-  "basementCeiling",
-  "roofInsulation",
-  "wdvs",
-  "windowTriple",
-  "heatPumpAirWater",
-  "pvWithStorage",
-  "ventilationCentral",
-  "energyAdvice",
-]);
-
-const condition = z.enum(["original", "partial", "renewed", "none", "unknown"]);
+const tri = z.enum(["yes", "no", "unknown"]);
+const ev = z.enum(["yes", "planned", "no", "unknown"]);
+const hasPv = z.enum(["none", "yes", "unknown"]);
 
 export const draftSchema = z.object({
   plz: z.string(),
-  buildingType: z.enum(["EFH", "DHH", "RH", "MFH", "unknown"]).nullable(),
-  decade: z
-    .enum(["pre1950", "1950-69", "1970-89", "1990-2001", "2002-15", "from2016", "unknown"])
-    .nullable(),
-  heating: z
-    .enum(["gas", "oil", "heatpump", "district", "nightstorage", "other", "unknown"])
-    .nullable(),
-  insulation: z.enum(["weak", "mixed", "good", "unknown"]),
-  livingAreaM2: z.number().nullable(),
-  persons: z.number().nullable(),
-  heatingCostEurYear: z.number().nullable(),
-  heatingKwhYear: z.number().nullable(),
-  dhwElectric: z.union([z.boolean(), z.literal("unknown")]),
-  roof: condition,
-  facade: condition,
-  windows: condition,
-  basement: condition,
-  hasPv: z.union([z.boolean(), z.literal("unknown")]),
-  goals: z.array(z.enum(["cost", "comfort", "climate", "independence"])),
-  incomeBand: z.enum(["upto30k", "upto40k", "upto50k", "above", "preferNot"]),
-  hasMinorChild: z.boolean(),
-  climateBonus: z.union([z.boolean(), z.literal("auto")]),
-  costFactor: z.number(),
-  priceHeating: z.number().nullable(),
+  householdKwhYear: z.number().nullable(),
+  householdCostEurYear: z.number().nullable(),
+  hasEv: ev.nullable(),
+  evKmYear: z.number().nullable(),
+  evKwhYear: z.number().nullable(),
+  hasHeatPump: tri.nullable(),
+  heatPumpKwhYear: z.number().nullable(),
+  hasPv: hasPv,
   priceElectricity: z.number().nullable(),
-  priceHeatpump: z.number().nullable(),
-  alreadyDone: z.array(measureId),
+  pvKwpOverride: z.number().nullable(),
+  batteryKwhOverride: z.number().nullable(),
+  costFactor: z.number(),
   asOf: z.string(),
-  includeIsfp: z.boolean(),
-  dwellingUnits: z.number().nullable(),
 });
 
 export type DraftInput = z.infer<typeof draftSchema>;
