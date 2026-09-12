@@ -260,7 +260,7 @@ export function evaluate(partial: Partial<Draft>): Evaluation {
     totalKwh: round0(totalKwh),
   };
 
-  const facts = collectFacts(draft, loads, climate.label, price.mid);
+  const facts = collectFacts(draft, loads, climate.label, price.mid, batteryKwh.mid);
   const confidence = scoreConfidence(draft, loads);
   const warnings: string[] = [];
   if (!draft.plz) warnings.push(COPY.plzHint);
@@ -352,6 +352,7 @@ function collectFacts(
   loads: Evaluation["loads"],
   climateLabel: string,
   priceMid: number,
+  batteryMid: number,
 ): Fact[] {
   const facts: Fact[] = [];
   const push = (key: string, label: string, value: string, source: Fact["source"]) =>
@@ -400,14 +401,14 @@ function collectFacts(
     draft.hasPv === "unknown" || (draft.hasPv === "yes" && !draft.existingPvKwp) ? "assumed" : "entered",
   );
   {
-    const have = draft.existingBatteryKwh;
+    const have = draft.hasBattery === "yes" ? draft.existingBatteryKwh : null;
     const want = draft.batteryKwhOverride;
     if (have) {
-      push("battery", COPY.factBatteryHave, `${round1(have)} kWh`, "entered");
+      push("battery", "Speicher", `${round1(have)} kWh`, "entered");
     } else if (want) {
-      push("battery", COPY.factBatteryWanted, `${round1(want)} kWh`, "entered");
+      push("battery", "Speicher", `${round1(want)} kWh (von Ihnen)`, "entered");
     } else {
-      push("battery", COPY.factBatteryGuess, "wir legen eine Größe fest", "assumed");
+      push("battery", "Speicher", `ca. ${round1(batteryMid)} kWh`, "assumed");
     }
   }
   if (draft.hasEv === "yes" || draft.hasEv === "planned") {
