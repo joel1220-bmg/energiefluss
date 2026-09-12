@@ -8,7 +8,7 @@ export const COPY = {
   privacy: "Ihre Angaben bleiben in diesem Browser.",
   underCta:
     "Keine zertifizierte Beratung — Orientierung zu Größe, Speicher und groben Kosten-/Eigenverbrauchsspannen.",
-  landingTileFour: "Vier Angaben",
+  landingTileFour: "Wenige Angaben",
   landingTileFourBody: "Strombedarf, E-Auto, Wärmepumpe als Last, optional PLZ. Weiß ich nicht ist immer erlaubt.",
   landingTileSize: "Größe",
   landingTileSizeBody: "Empfohlene PV in kWp und Speicher in kWh — als Spanne, kein Punktwert.",
@@ -30,6 +30,7 @@ export const COPY = {
   recommendLead: "Empfohlen grob:",
   recommendTail: "Kosten und Eigenverbrauch als Spanne — keine Punktwerte, keine Zusage.",
   grantDisclaimer: "Orientierung, kein Angebot.",
+  notCertified: "Keine zertifizierte Beratung.",
   spanNote: "Spanne, weil vieles noch angenommen ist.",
   ftStrom: "Strompreis (ct/kWh)",
   ftPv: "PV-Leistung (kWp)",
@@ -54,7 +55,7 @@ export const TRI_CHIP: Record<TriState, string> = {
 
 export const HAS_PV_CHIP: Record<HasPvState, string> = {
   none: "Keine",
-  yes: "Ja, grob",
+  yes: "Ja, schon vorhanden",
   unknown: "Weiß ich nicht",
 };
 

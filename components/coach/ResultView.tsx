@@ -76,7 +76,7 @@ export function ResultView({
       <p className="mt-3 text-base text-ink">{result.recommendSentence}</p>
       <HorizonPath path={result.path} />
       <p className="mt-3 text-sm text-muted">
-        Sicherheit: <strong className="text-ink">{result.confidence.level}</strong>. {COPY.underCta}
+        Sicherheit: <strong className="text-ink">{result.confidence.level}</strong>. {COPY.notCertified}
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
