@@ -95,7 +95,9 @@ function bandCost(unitLow: number, unitMid: number, unitHigh: number, qty: numbe
 }
 
 function buildPath(draft: Draft, loads: Evaluation["loads"], recommendPv: boolean): PathCard[] {
-  const jetztItems = [COPY.morningStep, COPY.morningWhere];
+  const jetztItems = recommendPv
+    ? [COPY.jetztDach, COPY.jetztErtrag]
+    : [COPY.jetztBestehend, COPY.jetztSpeicher];
 
   const baldItems: string[] = [];
   if (loads.evActive || draft.hasEv === "planned" || draft.hasEv === "unknown") {
@@ -268,11 +270,12 @@ export function evaluate(partial: Partial<Draft>): Evaluation {
 
   const path = buildPath(draft, loads, recommendPv);
 
+  const useMeter = draft.hasPv === "yes" || household.assumed;
   const nextSteps = [
     {
       id: "morning",
-      label: COPY.morningStep,
-      detail: COPY.morningWhere,
+      label: useMeter ? COPY.morningStepMeter : COPY.morningStep,
+      detail: useMeter ? COPY.morningWhereMeter : COPY.morningWhere,
     },
   ];
 

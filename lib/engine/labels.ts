@@ -52,6 +52,12 @@ export const COPY = {
     "Mit Postleitzahl nutzen wir den lokalen Solarertrag. Das kann die empfohlene Größe und damit die Kostenspanne gegenüber einer Schätzung ohne PLZ verschieben.",
   morningStep: "Morgen: ein Foto vom Dach, bei Sonne, mit etwas Platz drumherum.",
   morningWhere: "Das Foto bleibt auf Ihrem Handy. Wir holen es nicht ab. Später zum Angebot mitnehmen.",
+  morningStepMeter: "Morgen: letzte Stromrechnung oder Zählerstand bereitlegen.",
+  morningWhereMeter: "Bleibt bei Ihnen — kein Upload. Damit die Spanne enger wird.",
+  jetztDach: "Freie Dachfläche und Sonnenseite grob klären",
+  jetztErtrag: "Ertrags-Spanne verstehen — noch ohne Angebot",
+  jetztBestehend: "Bestehende Anlagengröße notieren",
+  jetztSpeicher: "Nur die Speicher-Spanne verstehen — noch ohne Angebot",
   paybackNote:
     "Grobe Mitte — kann kürzer oder länger werden. Kein Finanzplan.",
 } as const;
