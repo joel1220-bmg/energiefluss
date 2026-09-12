@@ -17,6 +17,8 @@ export const draftSchema = z.object({
   existingPvKwp: z.number().nullable(),
   hasBattery: tri.nullable(),
   existingBatteryKwh: z.number().nullable(),
+  chargesAtHome: tri.nullable().optional(),
+  wallboxKw: z.number().nullable().optional(),
   priceElectricity: z.number().nullable(),
   pvKwpOverride: z.number().nullable(),
   batteryKwhOverride: z.number().nullable(),

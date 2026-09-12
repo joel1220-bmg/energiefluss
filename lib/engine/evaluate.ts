@@ -157,11 +157,12 @@ export function evaluate(partial: Partial<Draft>): Evaluation {
 
   const batBaseLow = pvKwp.mid * 0.8;
   const batBaseHigh = pvKwp.mid * 1.2;
-  const evBonusLow = ev.active ? 1 : 0;
-  const evBonusHigh = ev.active ? 3 : 0;
+  const evening = draft.chargesAtHome === "yes";
+  const evBonusLow = ev.active ? (evening ? 2 : 1) : 0;
+  const evBonusHigh = ev.active ? (evening ? 5 : 3) : 0;
   let batteryKwh = sortRange({
     low: round1(batBaseLow + evBonusLow),
-    mid: round1((batBaseLow + batBaseHigh) / 2 + (ev.active ? 2 : 0)),
+    mid: round1((batBaseLow + batBaseHigh) / 2 + (ev.active ? (evening ? 3 : 2) : 0)),
     high: round1(batBaseHigh + evBonusHigh),
   });
   batteryKwh = applyOverride(batteryKwh, draft.batteryKwhOverride ?? draft.existingBatteryKwh);
@@ -389,9 +390,29 @@ function collectFacts(
   push(
     "hasPv",
     "Bestehende PV",
-    draft.hasPv === "yes" ? "ja, grob" : draft.hasPv === "none" ? "keine" : "unbekannt",
-    draft.hasPv === "unknown" ? "assumed" : "entered",
+    draft.hasPv === "yes"
+      ? draft.existingPvKwp
+        ? `${round1(draft.existingPvKwp)} kWp`
+        : "ja, Größe offen"
+      : draft.hasPv === "none"
+        ? "keine"
+        : "unbekannt",
+    draft.hasPv === "unknown" || (draft.hasPv === "yes" && !draft.existingPvKwp) ? "assumed" : "entered",
   );
+  if (draft.hasEv === "yes" || draft.hasEv === "planned") {
+    push(
+      "chargeHome",
+      "Laden zu Hause / abends",
+      draft.chargesAtHome === "yes" ? "ja" : draft.chargesAtHome === "no" ? "nein" : "unbekannt",
+      !draft.chargesAtHome || draft.chargesAtHome === "unknown" ? "assumed" : "entered",
+    );
+    push(
+      "wallbox",
+      "Wallbox",
+      `${round1(draft.wallboxKw ?? 11)} kW`,
+      draft.wallboxKw ? "entered" : "assumed",
+    );
+  }
   push("climate", "Sonne vor Ort", climateLabel, draft.plz ? "entered" : "assumed");
   push("price", "Strompreis", `${round1(priceMid * 100)} ct/kWh`, draft.priceElectricity ? "entered" : "assumed");
   return facts;

@@ -144,6 +144,25 @@ export function QuestionForm({
           {!draft.evKmYear && !draft.evKwhYear && (draft.hasEv === "yes" || draft.hasEv === "planned") ? (
             <p className="mt-2 text-sm text-muted">{COPY.unknownHelp}</p>
           ) : null}
+
+          <div className="mt-6">
+            <ChipGroup
+              legend={COPY.qChargeHome}
+              value={draft.chargesAtHome}
+              onChange={(chargesAtHome) => onChange({ chargesAtHome })}
+              options={TRIS.map((value) => ({ value, label: TRI_CHIP[value] }))}
+              help={COPY.qChargeHomeHint}
+            />
+          </div>
+          <Field label={COPY.qWallboxKw} hint={COPY.qWallboxKwHint}>
+            <input
+              className={inputClass}
+              inputMode="decimal"
+              value={draft.wallboxKw ?? ""}
+              onChange={(e) => onChange({ wallboxKw: parseDeNumber(e.target.value) })}
+              placeholder="z. B. 11"
+            />
+          </Field>
         </fieldset>
       ) : null}
 
@@ -209,7 +228,7 @@ export function QuestionForm({
       />
 
       {draft.hasBattery === "yes" || draft.hasBattery === "unknown" ? (
-        <Field label={COPY.qBatteryKwh} hint={COPY.qBatteryKwhHint}>
+        <Field label={COPY.qBatteryKwh} hint={`${COPY.qBatteryKwhHint} ${COPY.eveningHint}`}>
           <input
             className={inputClass}
             inputMode="decimal"

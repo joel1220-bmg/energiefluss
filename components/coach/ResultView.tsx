@@ -89,6 +89,7 @@ export function ResultView({
       <p className="text-sm uppercase tracking-[0.12em] text-moss">Ergebnis</p>
       <h1 className="serif mt-2 text-[1.7rem] leading-snug text-forest sm:text-4xl">{result.houseSentence}</h1>
       <p className="mt-3 text-base text-ink">{result.recommendSentence}</p>
+      {result.loads.wpActive ? <p className="mt-2 text-sm text-muted">{COPY.wpPartial}</p> : null}
       <HorizonPath path={result.path} />
       <p className="mt-3 text-sm text-muted">
         Sicherheit: <strong className="text-ink">{result.confidence.level}</strong>. {COPY.notCertified}
@@ -116,16 +117,21 @@ export function ResultView({
       <h2 className="serif mt-8 text-2xl text-forest">Kosten (Orientierung)</h2>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {(
-          [
-            ["PV allein", result.costPvOnly, result.recommendPv],
-            ["PV + Speicher", result.costPvBattery, true],
-            ["+ Wallbox", result.costPvBatteryWallbox, true],
-          ] as const
+          result.recommendPv
+            ? ([
+                [COPY.costNewPv, result.costPvOnly, true],
+                [COPY.costPvStorage, result.costPvBattery, true],
+                [COPY.costPlusWallbox, result.costPvBatteryWallbox, draft.hasEv === "yes" || draft.hasEv === "planned"],
+              ] as const)
+            : ([
+                [COPY.costStorageOnly, result.costPvBattery, true],
+                [COPY.costPlusWallbox, result.costPvBatteryWallbox, draft.hasEv === "yes" || draft.hasEv === "planned"],
+              ] as const)
         ).map(([k, r, show]) => (
           <div key={k} className="rounded-2xl border border-line bg-card p-4">
             <p className="text-xs uppercase tracking-wide text-muted">{k}</p>
             <p className="mt-1 text-xl font-semibold leading-tight">
-              {show && (r.high > 0 || k !== "PV allein") ? <Band r={r} /> : "—"}
+              {show ? <Band r={r} /> : "—"}
             </p>
           </div>
         ))}
@@ -137,25 +143,25 @@ export function ResultView({
       <h2 className="serif mt-8 text-2xl text-forest">Eigenverbrauch &amp; Autarkie</h2>
       <dl className="mt-3 grid gap-3 sm:grid-cols-2">
         <div className="rounded-2xl border border-line bg-card p-4">
-          <dt className="text-xs uppercase tracking-wide text-muted">Eigenverbrauch ohne Speicher</dt>
+          <dt className="text-xs uppercase tracking-wide text-muted">{COPY.scNo}</dt>
           <dd className="mt-1 text-xl font-semibold">
             <PctBand low={result.selfConsumptionNoBattery.low} high={result.selfConsumptionNoBattery.high} />
           </dd>
         </div>
         <div className="rounded-2xl border border-line bg-card p-4">
-          <dt className="text-xs uppercase tracking-wide text-muted">Eigenverbrauch mit Speicher</dt>
+          <dt className="text-xs uppercase tracking-wide text-muted">{COPY.scWith}</dt>
           <dd className="mt-1 text-xl font-semibold">
             <PctBand low={result.selfConsumptionWithBattery.low} high={result.selfConsumptionWithBattery.high} />
           </dd>
         </div>
         <div className="rounded-2xl border border-line bg-card p-4">
-          <dt className="text-xs uppercase tracking-wide text-muted">Autarkie ohne Speicher</dt>
+          <dt className="text-xs uppercase tracking-wide text-muted">{COPY.autNo}</dt>
           <dd className="mt-1 text-xl font-semibold">
             <PctBand low={result.autarkyNoBattery.low} high={result.autarkyNoBattery.high} />
           </dd>
         </div>
         <div className="rounded-2xl border border-line bg-card p-4">
-          <dt className="text-xs uppercase tracking-wide text-muted">Autarkie mit Speicher</dt>
+          <dt className="text-xs uppercase tracking-wide text-muted">{COPY.autWith}</dt>
           <dd className="mt-1 text-xl font-semibold">
             <PctBand low={result.autarkyWithBattery.low} high={result.autarkyWithBattery.high} />
           </dd>
@@ -222,8 +228,8 @@ export function ResultView({
         <span>Angaben merken — nur in diesem Browser.</span>
       </label>
 
-      <Accordion title="Was Sie angegeben haben — und was angenommen ist">
-        <div className="grid gap-4 sm:grid-cols-2">
+      <h2 className="serif mt-10 text-2xl text-forest">Eingegeben / Angenommen</h2>
+      <div className="mt-3 grid gap-4 sm:grid-cols-2">
           <div>
             <p className="text-sm font-medium">Eingegeben</p>
             <ul className="mt-2 space-y-1 text-sm">
@@ -245,8 +251,7 @@ export function ResultView({
               ))}
             </ul>
           </div>
-        </div>
-      </Accordion>
+      </div>
 
       <h2 className="serif mt-12 text-2xl text-forest">Ihr erster Schritt</h2>
       {result.nextSteps.slice(0, 1).map((s) => (
@@ -334,7 +339,7 @@ function FineTune({
           onChange={(e) => onChange({ batteryKwhOverride: Number(e.target.value) })}
         />
       </Field>
-      <Field label={COPY.ftBatteryExact} hint="Direkt in kWh, z. B. 10">
+      <Field label={COPY.ftBatteryExact} hint={`Direkt in kWh, z. B. 10. ${COPY.eveningHint}`}>
         <input
           className={inputClass}
           inputMode="decimal"
@@ -344,6 +349,15 @@ function FineTune({
             onChange({ batteryKwhOverride: n, existingBatteryKwh: n });
           }}
           placeholder="z. B. 10"
+        />
+      </Field>
+      <Field label={COPY.qWallboxKw} hint={COPY.qWallboxKwHint}>
+        <input
+          className={inputClass}
+          inputMode="decimal"
+          value={draft.wallboxKw ?? ""}
+          onChange={(e) => onChange({ wallboxKw: parseDeNumber(e.target.value) })}
+          placeholder="11"
         />
       </Field>
       <Field label={COPY.ftPvExact} hint="Direkt in kWp, z. B. 8,5">
