@@ -11,7 +11,7 @@ export const COPY = {
   landingTileFour: "Wenige Angaben",
   landingTileFourBody: "Strombedarf, E-Auto, Wärmepumpe als Last, optional PLZ. Weiß ich nicht ist immer erlaubt.",
   landingTileSize: "Größe",
-  landingTileSizeBody: "Empfohlene PV in kWp und Speicher in kWh — als Spanne, kein Punktwert.",
+  landingTileSizeBody: "Wie groß die Solaranlage und der Speicher ungefähr sein sollten — als Spanne, kein Punktwert.",
   landingTileCost: "Kosten / Spanne",
   landingTileCostBody: "Kosten als Spanne (oft 0 % MwSt. bei privater PV), Eigenverbrauch und Autarkie grob.",
   qPlz: "In welcher Postleitzahl steht Ihr Haus?",
@@ -45,14 +45,15 @@ export const COPY = {
   ftEvKm: "E-Auto km/Jahr",
   ftWpKwh: "Wärmepumpe kWh/Jahr",
   ftCost: "Kostenband (±30 %)",
-  unitExplain: "kWp = Leistung der Solaranlage. kWh = Inhalt des Speichers.",
+  unitExplain: "kWp sagt, wie groß die Solaranlage ist. kWh sagt, wie viel der Speicher hält.",
   vatNote:
     "Viele private PV-Anlagen in DE sind seit 2023 mit 0 % MwSt. ausgewiesen. Unsere Spanne ist eine grobe Endpreis-Orientierung, kein Steuerbescheid.",
   plzPriceNote:
     "Mit Postleitzahl nutzen wir den lokalen Solarertrag. Das kann die empfohlene Größe und damit die Kostenspanne gegenüber einer Schätzung ohne PLZ verschieben.",
-  morningStep: "Morgen: Zählerstand oder letzte Stromrechnung bereitlegen.",
+  morningStep: "Morgen: ein Foto vom Dach, bei Sonne, mit etwas Platz drumherum.",
+  morningWhere: "Das Foto bleibt auf Ihrem Handy. Wir holen es nicht ab. Später zum Angebot mitnehmen.",
   paybackNote:
-    "Grobe Amortisation: Anlagekosten geteilt durch ersparten Netzstrom plus Einspeiseerlös. Strompreis bleibt nicht stehen — kein Finanzplan.",
+    "Grobe Mitte — kann kürzer oder länger werden. Kein Finanzplan.",
 } as const;
 
 export const EV_CHIP: Record<EvState, string> = {

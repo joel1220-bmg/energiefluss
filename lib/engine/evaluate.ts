@@ -95,15 +95,7 @@ function bandCost(unitLow: number, unitMid: number, unitHigh: number, qty: numbe
 }
 
 function buildPath(draft: Draft, loads: Evaluation["loads"], recommendPv: boolean): PathCard[] {
-  const jetztItems: string[] = [];
-  if (recommendPv) {
-    jetztItems.push("Passende PV-Größe als Spanne anfragen");
-    jetztItems.push("Speicher-Spanne mit anbieten lassen");
-  } else {
-    jetztItems.push("Bestehende PV prüfen — kein zweites Vollsystem");
-    jetztItems.push("Speicher-Nachrüstung als Spanne anfragen");
-  }
-  jetztItems.push(HORIZON_COPY.jetzt.sub);
+  const jetztItems = [COPY.morningStep, COPY.morningWhere];
 
   const baldItems: string[] = [];
   if (loads.evActive || draft.hasEv === "planned" || draft.hasEv === "unknown") {
@@ -280,19 +272,7 @@ export function evaluate(partial: Partial<Draft>): Evaluation {
     {
       id: "morning",
       label: COPY.morningStep,
-      detail: "Ohne echte kWh bleibt alles eine grobe Spanne.",
-    },
-    {
-      id: "print",
-      label: "Diese Orientierung sichern",
-      detail: "Drucken oder als PDF speichern — bleibt sonst nur in diesem Browser.",
-    },
-    {
-      id: "offers",
-      label: "Später: zwei bis drei Angebote",
-      detail: recommendPv
-        ? "Erst wenn die kWh-Zahlen sitzen. Mit Spanne, nicht mit einem Punktwert."
-        : "Zur Speicher-/Wallbox-Nachrüstung an der bestehenden Anlage.",
+      detail: COPY.morningWhere,
     },
   ];
 
@@ -409,7 +389,7 @@ function collectFacts(
     draft.hasPv === "yes" ? "ja, grob" : draft.hasPv === "none" ? "keine" : "unbekannt",
     draft.hasPv === "unknown" ? "assumed" : "entered",
   );
-  push("climate", "Ertrag", `${climateLabel} · ~${round0(lookupClimate(draft.plz).pvYieldKwhPerKwp)} kWh/kWp`, draft.plz ? "entered" : "assumed");
+  push("climate", "Sonne vor Ort", climateLabel, draft.plz ? "entered" : "assumed");
   push("price", "Strompreis", `${round1(priceMid * 100)} ct/kWh`, draft.priceElectricity ? "entered" : "assumed");
   return facts;
 }

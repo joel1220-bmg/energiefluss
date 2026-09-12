@@ -19,23 +19,15 @@ function PctBand({ low, high }: { low: number; high: number }) {
 }
 
 function Payback({ result }: { result: Evaluation }) {
-  const saveLow = Math.max(
+  const saveMid = Math.max(
     80,
-    result.electricityCostNow.low - result.electricityCostWithSystem.high + result.feedInRevenue.low,
+    result.electricityCostNow.mid - result.electricityCostWithSystem.mid + result.feedInRevenue.mid,
   );
-  const saveHigh = Math.max(
-    80,
-    result.electricityCostNow.high - result.electricityCostWithSystem.low + result.feedInRevenue.high,
-  );
-  const cost = result.recommendPv ? result.costPvBattery : result.costPvBattery;
-  const yLow = Math.max(4, Math.round(cost.low / saveHigh));
-  const yHigh = Math.min(28, Math.round(cost.high / saveLow));
+  const years = Math.min(25, Math.max(6, Math.round(result.costPvBattery.mid / saveMid)));
   return (
     <div className="mt-3 rounded-2xl border border-line bg-card p-4">
       <p className="text-xs uppercase tracking-wide text-muted">Amortisation grob</p>
-      <p className="mt-1 text-xl font-semibold tabular-nums">
-        {formatDeNumber(Math.min(yLow, yHigh))}–{formatDeNumber(Math.max(yLow, yHigh))} Jahre
-      </p>
+      <p className="mt-1 text-xl font-semibold tabular-nums">um die {formatDeNumber(years)} Jahre</p>
       <p className="mt-2 text-sm text-muted">{COPY.paybackNote}</p>
     </div>
   );
@@ -256,15 +248,13 @@ export function ResultView({
         </div>
       </Accordion>
 
-      <h2 className="serif mt-12 text-2xl text-forest">Nächste Schritte</h2>
-      <ol className="mt-3 list-decimal space-y-3 pl-5">
-        {result.nextSteps.map((s) => (
-          <li key={s.id}>
-            <span className="font-medium">{s.label}</span>
-            <span className="block text-sm text-muted">{s.detail}</span>
-          </li>
-        ))}
-      </ol>
+      <h2 className="serif mt-12 text-2xl text-forest">Ihr erster Schritt</h2>
+      {result.nextSteps.slice(0, 1).map((s) => (
+        <div key={s.id} className="mt-3 rounded-2xl border border-forest/30 bg-card p-4">
+          <p className="font-medium">{s.label}</p>
+          <p className="mt-1 text-sm text-muted">{s.detail}</p>
+        </div>
+      ))}
 
       {drawer ? (
         <div className="no-print fixed inset-0 z-40 flex items-end justify-center sm:items-center">
