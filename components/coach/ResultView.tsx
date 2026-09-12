@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import type { Draft, Evaluation, Insulation, MeasureId, MeasureResult, Range } from "@/lib/engine/types";
-import { COPY, INSULATION_CHIP, MEASURE_TITLE } from "@/lib/engine/labels";
+import { COPY, INSULATION_CHIP, MEASURE_TECHNICAL, MEASURE_TITLE } from "@/lib/engine/labels";
 import { formatDeNumber, formatRangeEUR, formatRangeKwh, formatYears, parseDeNumber } from "@/lib/engine/parse";
 import { Accordion, ChipGroup, Field, inputClass } from "./ui";
 
@@ -12,6 +12,31 @@ function Band({ r, suffix = "" }: { r: Range; suffix?: string }) {
       {formatRangeEUR(r.low, r.high)}
       {suffix}
     </span>
+  );
+}
+
+
+function HorizonPath({ measures }: { measures: MeasureResult[] }) {
+  const order = ["jetzt", "bald", "spaeter"] as const;
+  const label = { jetzt: "Jetzt", bald: "Bald", spaeter: "Später" };
+  return (
+    <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+      {order.map((h) => {
+        const items = measures.filter((m) => m.applicable && m.horizon === h).slice(0, 3);
+        return (
+          <article key={h} className="rounded-2xl border border-line bg-card p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-moss">{label[h]}</p>
+            <ul className="mt-2 space-y-1 text-sm">
+              {items.length ? (
+                items.map((m) => <li key={m.id}>{m.title}</li>)
+              ) : (
+                <li className="text-muted">nichts Dringendes</li>
+              )}
+            </ul>
+          </article>
+        );
+      })}
+    </div>
   );
 }
 
@@ -33,6 +58,9 @@ function MeasureCard({ m, disclaimer }: { m: MeasureResult; disclaimer: string }
         <HorizonBadge h={m.horizon} />
       </div>
       <p className="mt-2 text-sm text-muted">{m.summary}</p>
+      {MEASURE_TECHNICAL[m.id] ? (
+        <p className="mt-1 text-xs text-muted">{MEASURE_TECHNICAL[m.id]}</p>
+      ) : null}
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <div>
           <dt className="text-muted">Kosten</dt>
@@ -116,7 +144,7 @@ export function ResultView({
     <div className="mx-auto max-w-3xl px-4 py-8">
       <p className="text-sm uppercase tracking-[0.12em] text-moss">Ergebnis</p>
       <h1 className="serif mt-2 text-[1.7rem] leading-snug text-forest sm:text-4xl">{result.houseSentence}</h1>
-      <p className="mt-3 text-base text-ink">{result.pathSentence}</p>
+      <HorizonPath measures={result.measures} />
       <p className="mt-3 text-sm text-muted">
         Sicherheit: <strong className="text-ink">{result.confidence.level}</strong>.
         Keine zertifizierte Beratung.
@@ -134,12 +162,24 @@ export function ResultView({
           }))}
           help={COPY.insulationHint}
         />
+        <div className="no-print mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="min-h-11 rounded-full bg-forest px-4 text-sm font-semibold text-paper"
+            onClick={() => setDrawer(true)}
+          >
+            Feinschliff
+          </button>
+          <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={onEditQuestions}>
+            Fragen ändern
+          </button>
+        </div>
       </section>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
         {(
           [
-            ["Wärmebedarf", formatRangeKwh(result.heat.spaceHeatKwh.low, result.heat.spaceHeatKwh.high)],
+            ["Wärmebedarf / Jahr", formatRangeKwh(result.heat.spaceHeatKwh.low, result.heat.spaceHeatKwh.high)],
             ["Heizkosten / Jahr", formatRangeEUR(result.heat.costEurYear.low, result.heat.costEurYear.high)],
             ["CO₂ / Jahr", `${formatDeNumber(result.heat.co2kgYear.low)}–${formatDeNumber(result.heat.co2kgYear.high)} kg`],
           ] as const
@@ -150,6 +190,7 @@ export function ResultView({
           </div>
         ))}
       </div>
+      <p className="mt-2 text-sm text-muted">Spanne, weil vieles noch angenommen ist.</p>
 
       <Accordion title="Was Sie angegeben haben — und was angenommen ist">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -178,16 +219,6 @@ export function ResultView({
       </Accordion>
 
       <div className="no-print mt-6 flex flex-wrap gap-2">
-        <button
-          type="button"
-          className="min-h-11 rounded-full bg-forest px-4 text-sm font-semibold text-paper"
-          onClick={() => setDrawer(true)}
-        >
-          Feinschliff
-        </button>
-        <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={onEditQuestions}>
-          Fragen ändern
-        </button>
         <button type="button" className="min-h-11 rounded-full border border-line px-4 text-sm" onClick={() => window.print()}>
           Drucken / PDF
         </button>

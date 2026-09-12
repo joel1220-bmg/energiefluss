@@ -74,7 +74,7 @@ export const INSULATION_CHIP: Record<Insulation, string> = {
 
 export const MEASURE_TITLE: Record<MeasureId, string> = {
   hydraulicBalancing: "Hydraulischer Abgleich",
-  topFloorCeiling: "Oberste Geschossdecke",
+  topFloorCeiling: "Dachboden-Decke dämmen",
   basementCeiling: "Kellerdecke",
   roofInsulation: "Dachdämmung",
   wdvs: "Fassadendämmung",
@@ -83,6 +83,11 @@ export const MEASURE_TITLE: Record<MeasureId, string> = {
   pvWithStorage: "Photovoltaik mit Speicher",
   ventilationCentral: "Lüftung mit Wärmerückgewinnung",
   energyAdvice: "Energieberatung / iSFP",
+};
+
+export const MEASURE_TECHNICAL: Partial<Record<MeasureId, string>> = {
+  topFloorCeiling: "Fachlich: oberste Geschossdecke",
+  wdvs: "Fachlich: WDVS",
 };
 
 export function decadePhrase(decade: Decade | null): string {
