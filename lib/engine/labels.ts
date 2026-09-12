@@ -60,12 +60,12 @@ export const COPY = {
   ftEvKm: "E-Auto km/Jahr",
   ftWpKwh: "Wärmepumpe kWh/Jahr",
   ftCost: "Kostenband (±30 %)",
-  unitExplain: "kWp sagt, wie groß die Solaranlage ist. kWh sagt, wie viel der Speicher hält.",
+  unitExplain: "kWp sagt, wie groß die Solaranlage ist — zum Beispiel 8 kWp auf dem Dach. kWh sagt, wie viel der Speicher hält — zum Beispiel 10 kWh über Nacht.",
   vatNote:
     "Viele private PV-Anlagen in DE sind seit 2023 mit 0 % MwSt. ausgewiesen. Unsere Spanne ist eine grobe Endpreis-Orientierung, kein Steuerbescheid.",
   plzPriceNote:
     "Mehr Sonne vor Ort kann die Anlage etwas größer machen — deshalb springt die Kostenspanne.",
-  morningStep: "Morgen: ein Foto vom Dach, bei Sonne, mit etwas Platz drumherum.",
+  morningStep: "Morgen: Foto vom Dach machen und Sonnenseite sowie freien Platz notieren.",
   morningWhere: "Das Foto bleibt auf Ihrem Handy. Wir holen es nicht ab. Später zum Angebot mitnehmen.",
   morningStepMeter: "Morgen: letzte Stromrechnung oder Zählerstand bereitlegen.",
   morningWhereMeter: "Bleibt bei Ihnen — kein Upload. Damit die Spanne enger wird.",
@@ -74,7 +74,7 @@ export const COPY = {
   jetztBestehend: "Bestehende Anlagengröße notieren",
   jetztSpeicher: "Nur die Speicher-Spanne verstehen — noch ohne Angebot",
   paybackNote:
-    "Grobe Mitte — kann kürzer oder länger werden. Kein Finanzplan.",
+    "Das ist die grobe Mitte. Kann kürzer oder länger werden. Kein Finanzplan.",
 } as const;
 
 export const EV_CHIP: Record<EvState, string> = {
